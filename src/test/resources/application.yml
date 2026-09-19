@@ -1,0 +1,38 @@
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  liquibase:
+    enabled: false
+  data:
+    redis:
+      repositories:
+        enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      auto-startup: false
+    topic-creation:
+      enabled: false
+  mail:
+    host: localhost
+    port: 25
+
+security:
+  jwt:
+    secret: dGVzdC1vbmx5LXNlY3JldC1rZXktZm9yLXVuaXQtdGVzdHMtMTIzNDU2Nzg=
+    expiration-ms: 3600000
+    refresh-expiration-ms: 604800000
+  cors:
+    allowed-origins: "*"
+
+google:
+  client-id: test-google-client-id
