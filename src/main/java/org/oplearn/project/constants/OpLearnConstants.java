@@ -81,6 +81,35 @@ public class OpLearnConstants {
       "/api/v1/auth/login/google"
     };
 
+    public static final String[] HTTP_METHOD_GET_PUBLIC = {
+    };
+
+    public static final String[] HTTP_METHOD_POST_PUBLIC = {
+    };
+
+    public static final String[] HTTP_METHOD_PUT_PUBLIC = {
+    };
+
+    public static final String[] HTTP_METHOD_DELETE_PUBLIC = {
+    };
+
+    public static final String[] HTTP_METHOD_GET_ADMIN = {
+      "/api/v1/users"
+    };
+
+    public static final String[] HTTP_METHOD_POST_ADMIN = {
+      "/api/v1/users/**"
+    };
+
+    public static final String[] HTTP_METHOD_PUT_ADMIN = {
+      "/api/v1/users/**"
+    };
+
+    public static final String[] HTTP_METHOD_DELETE_ADMIN = {
+      "/api/v1/users/**",
+      "/api/v1/files/**"
+    };
+
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};
   }
 

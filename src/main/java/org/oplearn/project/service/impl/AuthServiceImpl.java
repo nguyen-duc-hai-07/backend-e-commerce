@@ -16,15 +16,17 @@ import org.oplearn.project.dto.request.RegisterRequest;
 import org.oplearn.project.dto.request.ResetPasswordRequest;
 import org.oplearn.project.dto.request.VerifyOtpRequest;
 import org.oplearn.project.dto.response.TokenResponse;
-import org.oplearn.project.enums.AuthProvider;
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.AuthProvider;
 import org.oplearn.project.enums.UserRole;
+import org.oplearn.project.enums.UserStatus;
 import org.oplearn.project.exception.EmailAlreadyExistedException;
 import org.oplearn.project.exception.InvalidCredentialException;
 import org.oplearn.project.exception.InvalidOtpException;
 import org.oplearn.project.exception.InvalidRefreshTokenException;
 import org.oplearn.project.exception.OtpExpiredException;
 import org.oplearn.project.exception.UserNotFoundException;
+import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.exception.UsernameAlreadyExistedException;
 import org.oplearn.project.constants.OpLearnConstants.KafkaConstant;
 import org.oplearn.project.event.ForgotPasswordEvent;
@@ -68,6 +70,10 @@ public class AuthServiceImpl implements AuthService {
     User user = userRepository.findByUsernameAndIsDeletedFalse(request.getUsername())
           .orElseThrow(InvalidCredentialException::new);
 
+    if (user.getStatus() == UserStatus.INACTIVE) {
+      throw new UserUnauthorizedException();
+    }
+
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new InvalidCredentialException();
     }
@@ -87,6 +93,7 @@ public class AuthServiceImpl implements AuthService {
     String otpCode = String.valueOf((int) ((Math.random() * 900000) + 100000));
 
     PendingRegisterData pendingData = PendingRegisterData.builder()
+      .fullName(request.getFullName())
       .username(request.getUsername())
       .email(request.getEmail())
       .phoneNumber(request.getPhoneNumber())
@@ -100,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
         .to(request.getEmail())
         .subject("Mã xác thực tài khoản OTP")
         .templateName("mail/welcome-email")
-        .variables(Map.of("recipientName", request.getUsername(), "otpCode", otpCode))
+        .variables(Map.of("recipientName", StringUtils.hasText(request.getFullName()) ? request.getFullName() : request.getUsername(), "otpCode", otpCode))
         .createdAt(Instant.now())
         .build();
 
@@ -136,11 +143,14 @@ public class AuthServiceImpl implements AuthService {
 
     // Chính thức lưu User vào Database
     User user = User.builder()
+      .fullName(pendingData.getFullName())
       .username(pendingData.getUsername())
       .email(pendingData.getEmail())
       .phoneNumber(pendingData.getPhoneNumber())
       .password(pendingData.getEncodedPassword())
       .role(UserRole.USER)
+      .provider(AuthProvider.LOCAL)
+      .status(UserStatus.ACTIVE)
       .build();
 
     userRepository.save(user);
@@ -230,6 +240,7 @@ public class AuthServiceImpl implements AuthService {
     GoogleIdToken.Payload payload = verifyGoogleToken(request.getToken());
     String email = payload.getEmail();
     String googleUserId = payload.getSubject();
+    String name = (String) payload.get("name");
 
     User user = userRepository.findByProviderAndProviderIdAndIsDeletedFalse(AuthProvider.GOOGLE, googleUserId)
       .or(() -> userRepository.findByEmailAndIsDeletedFalse(email))
@@ -237,14 +248,22 @@ public class AuthServiceImpl implements AuthService {
         // 3. Nếu chưa có -> Tự động đăng ký User mới
         String username = generateUniqueUsername(email, googleUserId);
         User newUser = User.builder()
+          .fullName(name != null && !name.isBlank() ? name : username)
           .username(username)
           .email(email)
           .role(UserRole.USER)
           .provider(AuthProvider.GOOGLE)
           .providerId(googleUserId)
+          .status(UserStatus.ACTIVE)
           .build();
         return userRepository.save(newUser);
-  });
+      });
+
+    if (user.getStatus() == UserStatus.INACTIVE) {
+      log.warn("(loginWithGoogle) tài khoản {} đã bị khóa (INACTIVE)", user.getUsername());
+      throw new UserUnauthorizedException();
+    }
+
     return issueTokens(user);
   }
 

@@ -8,6 +8,7 @@ import org.oplearn.project.dto.request.UserUpdateRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
 import org.oplearn.project.dto.response.UserResponse;
+import org.oplearn.project.enums.UserStatus;
 import org.oplearn.project.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,6 +53,15 @@ public class UserController {
   ) {
     log.info("(update) id: {}, request: {}", id, request);
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.update(request, id));
+  }
+
+  @PutMapping("/{id}/status")
+  public ResponseGeneral<UserResponse> changeStatus(
+      @PathVariable Long id,
+      @RequestParam UserStatus status
+  ) {
+    log.info("(changeStatus) id: {}, status: {}", id, status);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.changeStatus(id, status));
   }
 
   @GetMapping

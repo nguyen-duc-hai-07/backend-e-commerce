@@ -1,0 +1,53 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="005-create-products" author="ecommerce">
+    <createTable tableName="products">
+      <column name="id" type="BIGSERIAL">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="description" type="TEXT"/>
+
+      <column name="category_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_products_category"
+                     references="categories(id)"/>
+      </column>
+
+      <column name="thumbnail_url" type="VARCHAR(500)"/>
+
+      <column name="average_rating" type="DECIMAL(2,1)" defaultValueNumeric="0.0">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="review_count" type="INT" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+
+      <!-- 5 Audit Fields -->
+      <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_by" type="VARCHAR(255)"/>
+      <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_by" type="VARCHAR(255)"/>
+      <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+    </createTable>
+
+    <createIndex tableName="products" indexName="idx_products_category_id">
+      <column name="category_id"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

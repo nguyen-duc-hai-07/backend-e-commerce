@@ -5,6 +5,7 @@ import org.oplearn.project.dto.request.UserUpdateRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.UserResponse;
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.UserStatus;
 
 public interface UserService {
   UserResponse create(UserRequest request);
@@ -16,6 +17,8 @@ public interface UserService {
   UserResponse detail(Long id);
 
   void delete(Long id);
+
+  UserResponse changeStatus(Long id, UserStatus status);
 
   User getUsernameOrThrow(String username);
 

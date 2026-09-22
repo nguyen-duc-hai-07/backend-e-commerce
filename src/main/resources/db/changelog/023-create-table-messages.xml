@@ -1,0 +1,58 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="023-create-messages" author="ecommerce">
+    <createTable tableName="messages">
+      <column name="id" type="BIGSERIAL">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="conversation_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_messages_conversation"
+                     references="conversations(id)"
+                     deleteCascade="true"/>
+      </column>
+
+      <column name="sender_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_messages_sender"
+                     references="users(id)"
+                     deleteCascade="true"/>
+      </column>
+
+      <column name="content" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="image_url" type="VARCHAR(500)"/>
+
+      <column name="is_read" type="BOOLEAN" defaultValueBoolean="false">
+        <constraints nullable="false"/>
+      </column>
+
+      <!-- 5 Audit Fields -->
+      <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_by" type="VARCHAR(255)"/>
+      <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_by" type="VARCHAR(255)"/>
+      <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+    </createTable>
+
+    <createIndex tableName="messages" indexName="idx_messages_conversation_id">
+      <column name="conversation_id"/>
+    </createIndex>
+    <createIndex tableName="messages" indexName="idx_messages_sender_id">
+      <column name="sender_id"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

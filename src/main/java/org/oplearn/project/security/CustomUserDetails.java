@@ -1,6 +1,7 @@
 package org.oplearn.project.security;
 
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.UserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,7 +35,7 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    return true;
+    return user.getStatus() != UserStatus.INACTIVE;
   }
 
   @Override
@@ -42,8 +43,9 @@ public class CustomUserDetails implements UserDetails {
     return true;
   }
 
+  @Override
   public boolean isEnabled() {
-    return true;
+    return user.getStatus() == UserStatus.ACTIVE;
   }
 
   public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PendingRegisterData {
+  private String fullName;
   private String username;
   private String email;
   private String phoneNumber;

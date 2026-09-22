@@ -1,0 +1,66 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="008-create-reviews" author="ecommerce">
+    <createTable tableName="reviews">
+      <column name="id" type="BIGSERIAL">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="product_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_reviews_product"
+                     references="products(id)"
+                     deleteCascade="true"/>
+      </column>
+
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_reviews_user"
+                     references="users(id)"
+                     deleteCascade="true"/>
+      </column>
+
+      <column name="rating" type="SMALLINT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="comment" type="TEXT"/>
+
+      <!-- 5 Audit Fields -->
+      <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_by" type="VARCHAR(255)"/>
+      <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_by" type="VARCHAR(255)"/>
+      <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+    </createTable>
+
+    <!-- Rating CHECK constraint (1 to 5) -->
+    <sql>
+      <![CDATA[
+      ALTER TABLE reviews ADD CONSTRAINT chk_reviews_rating CHECK (rating >= 1 AND rating <= 5);
+      ]]>
+    </sql>
+
+    <!-- Unique constraint: Mỗi user chỉ đánh giá 1 sản phẩm 1 lần -->
+    <addUniqueConstraint tableName="reviews"
+                         columnNames="product_id, user_id"
+                         constraintName="uq_reviews_product_user"/>
+
+    <createIndex tableName="reviews" indexName="idx_reviews_product_id">
+      <column name="product_id"/>
+    </createIndex>
+    <createIndex tableName="reviews" indexName="idx_reviews_user_id">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

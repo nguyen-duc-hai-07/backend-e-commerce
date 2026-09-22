@@ -1,0 +1,73 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="012-create-orders" author="ecommerce">
+    <createTable tableName="orders">
+      <column name="id" type="BIGSERIAL">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+
+      <column name="order_code" type="VARCHAR(100)">
+        <constraints nullable="false" unique="true" uniqueConstraintName="uq_orders_order_code"/>
+      </column>
+
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_orders_user"
+                     references="users(id)"/>
+      </column>
+
+      <column name="address_id" type="BIGINT">
+        <constraints nullable="false"
+                     foreignKeyName="fk_orders_address"
+                     references="addresses(id)"/>
+      </column>
+
+      <column name="shipping_fee" type="DECIMAL(15,2)" defaultValueNumeric="0.0">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="discount_amount" type="DECIMAL(15,2)" defaultValueNumeric="0.0">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="total_amount" type="DECIMAL(15,2)">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="status" type="VARCHAR(50)" defaultValue="PENDING_PAYMENT">
+        <constraints nullable="false"/>
+      </column>
+
+      <column name="note" type="VARCHAR(500)"/>
+
+      <column name="original_order_id" type="BIGINT">
+        <constraints foreignKeyName="fk_orders_original_order"
+                     references="orders(id)"/>
+      </column>
+
+      <!-- 5 Audit Fields -->
+      <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_by" type="VARCHAR(255)"/>
+      <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_by" type="VARCHAR(255)"/>
+      <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+    </createTable>
+
+    <createIndex tableName="orders" indexName="idx_orders_user_id">
+      <column name="user_id"/>
+    </createIndex>
+    <createIndex tableName="orders" indexName="idx_orders_status">
+      <column name="status"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

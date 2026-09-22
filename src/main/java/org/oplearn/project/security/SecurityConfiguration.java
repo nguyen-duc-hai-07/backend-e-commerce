@@ -22,10 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.oplearn.project.constants.OpLearnConstants.AuthConstant.MATCHER_ADMIN_API;
-import static org.oplearn.project.constants.OpLearnConstants.AuthConstant.MATCHER_AUTH_PUBLIC_API;
-import static org.oplearn.project.constants.OpLearnConstants.AuthConstant.ROLE_ADMIN;
-import static org.oplearn.project.constants.OpLearnConstants.AuthConstant.WHITE_LIST;
+import static org.oplearn.project.constants.OpLearnConstants.AuthConstant.*;
 
 @Configuration
 @EnableWebSecurity
@@ -49,10 +46,14 @@ public class SecurityConfiguration {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(WHITE_LIST).permitAll()
         .requestMatchers(MATCHER_AUTH_PUBLIC_API).permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.POST, "/api/v1/users/**").hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole(ROLE_ADMIN)
-        .requestMatchers(HttpMethod.DELETE, "/api/v1/files/**").hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.GET, HTTP_METHOD_GET_PUBLIC).permitAll()
+        .requestMatchers(HttpMethod.POST, HTTP_METHOD_POST_PUBLIC).permitAll()
+        .requestMatchers(HttpMethod.PUT, HTTP_METHOD_PUT_PUBLIC).permitAll()
+        .requestMatchers(HttpMethod.DELETE, HTTP_METHOD_DELETE_PUBLIC).permitAll()
+        .requestMatchers(HttpMethod.GET, HTTP_METHOD_GET_ADMIN).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.POST, HTTP_METHOD_POST_ADMIN).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.PUT, HTTP_METHOD_PUT_ADMIN).hasRole(ROLE_ADMIN)
+        .requestMatchers(HttpMethod.DELETE, HTTP_METHOD_DELETE_ADMIN).hasRole(ROLE_ADMIN)
         .requestMatchers(MATCHER_ADMIN_API).hasRole(ROLE_ADMIN)
         .anyRequest().authenticated())
       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

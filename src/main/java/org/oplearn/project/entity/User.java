@@ -2,11 +2,10 @@ package org.oplearn.project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.oplearn.project.entity.base.BaseEntity;
 import org.oplearn.project.enums.AuthProvider;
 import org.oplearn.project.enums.UserRole;
+import org.oplearn.project.enums.UserStatus;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +16,12 @@ import org.oplearn.project.enums.UserRole;
 @NoArgsConstructor
 @ToString(exclude = "password")
 public class User extends BaseEntity {
+  @Column(name = "full_name")
+  private String fullName;
+
+  @Column(name = "avatar_url", length = 500)
+  private String avatarUrl;
+
   @Column(name = "username")
   private String username;
 
@@ -26,20 +31,24 @@ public class User extends BaseEntity {
   @Column(name = "phone_number")
   private String phoneNumber;
 
-  @Column(name = "email")
+  @Column(name = "email", nullable = false, unique = true)
   private String email;
 
-  @Column(columnDefinition = "role_enum")
   @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  private UserRole role;
+  @Column(name = "role", length = 50, nullable = false)
+  @Builder.Default
+  private UserRole role = UserRole.USER;
 
-  @Column(columnDefinition = "auth_provider_enum")
   @Enumerated(EnumType.STRING)
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "auth_provider", length = 50, nullable = false)
   @Builder.Default
   private AuthProvider provider = AuthProvider.LOCAL;
 
   @Column(name = "provider_id")
   private String providerId;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", length = 50, nullable = false)
+  @Builder.Default
+  private UserStatus status = UserStatus.ACTIVE;
 }

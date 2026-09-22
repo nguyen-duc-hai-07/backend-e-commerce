@@ -8,6 +8,9 @@ import org.oplearn.project.dto.request.UserUpdateRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.UserResponse;
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.AuthProvider;
+import org.oplearn.project.enums.UserRole;
+import org.oplearn.project.enums.UserStatus;
 import org.oplearn.project.exception.EmailAlreadyExistedException;
 import org.oplearn.project.exception.ProtectedAccountException;
 import org.oplearn.project.exception.UserNotFoundException;
@@ -50,11 +53,15 @@ public class UserServiceImpl implements UserService {
     }
 
     User user = User.builder()
+        .fullName(request.getFullName())
         .username(request.getUsername())
         .password(passwordEncoder.encode(request.getPassword()))
         .phoneNumber(request.getPhoneNumber())
         .email(request.getEmail())
-        .role(request.getRole())
+        .role(request.getRole() != null ? request.getRole() : UserRole.USER)
+        .provider(request.getAuthProvider() != null ? request.getAuthProvider() : AuthProvider.LOCAL)
+        .status(request.getStatus() != null ? request.getStatus() : UserStatus.ACTIVE)
+        .avatarUrl(request.getAvatarUrl())
         .build();
 
     return UserResponse.from(repository.save(user));
@@ -90,20 +97,30 @@ public class UserServiceImpl implements UserService {
       throw new ProtectedAccountException();
     }
 
-    if (!Objects.equals(user.getUsername(), request.getUsername())
-        && repository.existsByUsernameAndIsDeletedFalse(request.getUsername())) {
-      throw new UsernameAlreadyExistedException();
-    }
-    if (StringUtils.hasText(request.getEmail())
-        && !Objects.equals(user.getEmail(), request.getEmail())
-        && repository.existsByEmailAndIsDeletedFalse(request.getEmail())) {
-      throw new EmailAlreadyExistedException();
+    // Cập nhật username (chỉ khi có truyền và khác username cũ)
+    if (StringUtils.hasText(request.getUsername())
+        && !Objects.equals(user.getUsername(), request.getUsername())) {
+      if (repository.existsByUsernameAndIsDeletedFalse(request.getUsername())) {
+        throw new UsernameAlreadyExistedException();
+      }
+      user.setUsername(request.getUsername().trim());
     }
 
-    user.setUsername(request.getUsername());
-    user.setPhoneNumber(request.getPhoneNumber());
-    user.setEmail(request.getEmail());
-    // Chỉ đổi mật khẩu khi có nhập
+    if (StringUtils.hasText(request.getEmail())
+        && !Objects.equals(user.getEmail(), request.getEmail())) {
+      if (repository.existsByEmailAndIsDeletedFalse(request.getEmail())) {
+        throw new EmailAlreadyExistedException();
+      }
+      user.setEmail(request.getEmail().trim());
+    }
+
+    if (StringUtils.hasText(request.getFullName())) {
+      user.setFullName(request.getFullName().trim());
+    }
+    if (request.getPhoneNumber() != null) {
+      user.setPhoneNumber(request.getPhoneNumber().trim());
+    }
+
     if (StringUtils.hasText(request.getPassword())) {
       user.setPassword(passwordEncoder.encode(request.getPassword()));
     }
@@ -111,7 +128,46 @@ public class UserServiceImpl implements UserService {
     if (request.getRole() != null && isAdmin) {
       user.setRole(request.getRole());
     }
+    // Khóa/mở khóa tài khoản: chỉ admin mới được đổi status
+    if (request.getStatus() != null && isAdmin) {
+      user.setStatus(request.getStatus());
+    }
 
+    // Cập nhật avatar:
+    // - Chỉ xử lý khi client có truyền trường avatar_url:
+    //   + Nếu truyền chuỗi rỗng "" -> Xóa avatar (gán null)
+    //   + Nếu truyền URL hợp lệ -> Cập nhật avatar mới
+    // - Nếu client không truyền avatar_url -> Giữ nguyên avatar cũ
+    if (request.getAvatarUrl() != null) {
+      user.setAvatarUrl(request.getAvatarUrl().isBlank() ? null : request.getAvatarUrl().trim());
+    }
+
+    return UserResponse.from(repository.save(user));
+  }
+
+  @Override
+  @Transactional
+  public UserResponse changeStatus(Long id, UserStatus status) {
+    log.info("(changeStatus) id: {}, status: {}", id, status);
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    boolean isAdmin = authentication.getAuthorities().stream()
+        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+    if (!isAdmin) {
+      log.warn("(changeStatus) user not authorized");
+      throw new UserUnauthorizedException();
+    }
+
+    User user = repository.findByIdAndIsDeletedFalse(id)
+        .orElseThrow(UserNotFoundException::new);
+
+    if (isProtectedAccount(user.getUsername())) {
+      log.warn("(changeStatus) không thể thay đổi trạng thái tài khoản bảo vệ {}", user.getUsername());
+      throw new ProtectedAccountException();
+    }
+
+    user.setStatus(status);
     return UserResponse.from(repository.save(user));
   }
 

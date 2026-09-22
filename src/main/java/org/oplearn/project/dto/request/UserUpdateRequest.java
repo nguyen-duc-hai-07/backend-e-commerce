@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.oplearn.project.enums.UserRole;
+import org.oplearn.project.enums.UserStatus;
 
 /**
  * Payload cập nhật user (admin sửa thông tin / nâng vai trò hoặc user tự sửa profile).
@@ -23,7 +24,8 @@ import org.oplearn.project.enums.UserRole;
 @ToString(exclude = "password")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserUpdateRequest {
-  @NotBlank(message = "user.username.not_blank")
+  private String fullName;
+
   private String username;
 
   private String phoneNumber;
@@ -33,7 +35,10 @@ public class UserUpdateRequest {
 
   private UserRole role;
 
-  /** Bỏ trống = giữ nguyên mật khẩu; có nhập thì tối thiểu 8 ký tự. */
+  private UserStatus status;
+
   @Size(min = 8, message = "user.password.min_length")
   private String password;
+
+  private String avatarUrl;
 }

@@ -6,7 +6,27 @@
             http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-  <include file="db/changelog/001-create-table-enum.xml"/>
   <include file="db/changelog/002-create-table-users.xml"/>
+  <include file="db/changelog/003-create-table-addresses.xml"/>
+  <include file="db/changelog/004-create-table-categories.xml"/>
+  <include file="db/changelog/005-create-table-products.xml"/>
+  <include file="db/changelog/006-create-table-product-variants.xml"/>
+  <include file="db/changelog/007-create-table-product-images.xml"/>
+  <include file="db/changelog/008-create-table-reviews.xml"/>
+  <include file="db/changelog/009-create-table-reviews-reply.xml"/>
+  <include file="db/changelog/010-create-table-payment-methods.xml"/>
+  <include file="db/changelog/011-create-table-cart-items.xml"/>
+  <include file="db/changelog/012-create-table-orders.xml"/>
+  <include file="db/changelog/013-create-table-order-items.xml"/>
+  <include file="db/changelog/014-create-table-payments.xml"/>
+  <include file="db/changelog/015-create-table-vouchers.xml"/>
+  <include file="db/changelog/016-create-table-user-vouchers.xml"/>
+  <include file="db/changelog/017-create-table-return-requests.xml"/>
+  <include file="db/changelog/018-create-table-return-request-images.xml"/>
+  <include file="db/changelog/019-create-table-complaints.xml"/>
+  <include file="db/changelog/020-create-table-notifications.xml"/>
+  <include file="db/changelog/021-create-table-notification-reads.xml"/>
+  <include file="db/changelog/022-create-table-conversations.xml"/>
+  <include file="db/changelog/023-create-table-messages.xml"/>
 
 </databaseChangeLog>

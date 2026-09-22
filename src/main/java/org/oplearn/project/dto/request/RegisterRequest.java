@@ -14,6 +14,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
+  @NotBlank(message = "user.full_name.not_blank")
+  private String fullName;
+
   @NotBlank(message = "user.username.not_blank")
   private String username;
 
