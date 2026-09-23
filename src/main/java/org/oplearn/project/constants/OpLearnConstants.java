@@ -1,5 +1,7 @@
 package org.oplearn.project.constants;
 
+import java.util.Locale;
+
 public class OpLearnConstants {
   private OpLearnConstants() {
   }
@@ -98,16 +100,19 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
-      "/api/v1/users/**"
+      "/api/v1/users/**",
+      "/api/v1/categories/**"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {
-      "/api/v1/users/**"
+      "/api/v1/users/**",
+      "/api/v1/categories/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
       "/api/v1/users/**",
-      "/api/v1/files/**"
+      "/api/v1/files/**",
+      "/api/v1/categories/**"
     };
 
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};
