@@ -125,6 +125,8 @@ public class OpLearnConstants {
     /** Trần CỨNG cho nhánh all=true (thay Pageable.unpaged) — chống DoS kéo cả bảng
      *  trong 1 request. Tổng số (amount) vẫn đúng nhờ count query riêng. */
     public static final int MAX_ALL_SIZE = 10000;
+    /** Giới hạn số lượng địa chỉ nhận hàng tối đa cho mỗi người dùng */
+    public static final int MAX_ADDRESSES_PER_USER = 10;
   }
 
   public static class CacheConstant {
