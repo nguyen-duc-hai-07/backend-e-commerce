@@ -26,6 +26,8 @@ public class ProductResponse {
   private String thumbnailUrl;
   private BigDecimal averageRating;
   private Integer reviewCount;
+  private BigDecimal minPrice;
+  private Integer soldCount;
 
   public static ProductResponse from(Product product) {
     if (product == null) {
@@ -39,6 +41,8 @@ public class ProductResponse {
         .thumbnailUrl(product.getThumbnailUrl())
         .averageRating(product.getAverageRating())
         .reviewCount(product.getReviewCount())
+        .minPrice(product.getMinPrice())
+        .soldCount(product.getSoldCount())
         .build();
   }
 
@@ -54,6 +58,8 @@ public class ProductResponse {
         .thumbnailUrl(row.getThumbnailUrl())
         .averageRating(row.getAverageRating())
         .reviewCount(row.getReviewCount())
+        .minPrice(row.getMinPrice())
+        .soldCount(row.getSoldCount())
         .build();
   }
 }

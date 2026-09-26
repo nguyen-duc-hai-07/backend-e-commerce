@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.DIRECTION_ASC;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -57,6 +58,12 @@ public class ProductServiceImpl implements ProductService {
     if (product.getThumbnailUrl() != null) {
       existingProduct.setThumbnailUrl(product.getThumbnailUrl());
     }
+    if (product.getMinPrice() != null) {
+      existingProduct.setMinPrice(product.getMinPrice());
+    }
+    if (product.getSoldCount() != null) {
+      existingProduct.setSoldCount(product.getSoldCount());
+    }
 
     return repository.save(existingProduct);
   }
@@ -76,11 +83,28 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String direction) {
-    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, direction: {}", categoryId, page, size, direction);
-    Sort sort = DIRECTION_ASC.equalsIgnoreCase(direction)
-        ? Sort.by("id").ascending()
-        : Sort.by("id").descending();
+  public PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String sortBy, String direction) {
+    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, sortBy: {}, direction: {}", categoryId, page, size, sortBy, direction);
+
+    String sortProperty = "id";
+    boolean isAsc = DIRECTION_ASC.equalsIgnoreCase(direction);
+
+    if (sortBy != null) {
+      String s = sortBy.trim().toLowerCase();
+      if ("min_price".equals(s)) {
+        sortProperty = "minPrice";
+      } else if ("sold_count".equals(s)) {
+        sortProperty = "soldCount";
+      }
+    }
+
+    Sort sort = isAsc
+        ? Sort.by(sortProperty).ascending()
+        : Sort.by(sortProperty).descending();
+
+    if (!"id".equals(sortProperty)) {
+      sort = sort.and(Sort.by("id").descending());
+    }
 
     Pageable pageable = PageRequest.of(page, size, sort);
     Page<Product> productPage = repository.findByCategoryId(categoryId, pageable);
@@ -135,5 +159,19 @@ public class ProductServiceImpl implements ProductService {
   public Product findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(ProductNotFoundException::new);
+  }
+
+  @Override
+  @Transactional
+  public void updateMinPrice(Long id, BigDecimal minPrice) {
+    log.info("(updateMinPrice) id: {}, minPrice: {}", id, minPrice);
+    repository.updateMinPrice(id, minPrice);
+  }
+
+  @Override
+  @Transactional
+  public void increaseSoldCount(Long id, int quantity) {
+    log.info("(increaseSoldCount) id: {}, quantity: {}", id, quantity);
+    repository.increaseSoldCount(id, quantity);
   }
 }

@@ -30,6 +30,8 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
         .description(request.getDescription())
         .categoryId(request.getCategoryId())
         .thumbnailUrl(request.getThumbnailUrl())
+        .minPrice(request.getMinPrice() != null ? request.getMinPrice() : java.math.BigDecimal.ZERO)
+        .soldCount(0)
         .build();
 
     Product savedProduct = productService.create(product);
@@ -49,6 +51,7 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
         .description(request.getDescription())
         .categoryId(request.getCategoryId())
         .thumbnailUrl(request.getThumbnailUrl())
+        .minPrice(request.getMinPrice())
         .build();
 
     Product updatedProduct = productService.update(product, id);
@@ -56,12 +59,12 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
   }
 
   @Override
-  public PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String direction) {
-    log.info("(facade) list products by categoryId: {}, page: {}, size: {}, direction: {}", categoryId, page, size, direction);
+  public PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String sortBy, String direction) {
+    log.info("(facade) list products by categoryId: {}, page: {}, size: {}, sortBy: {}, direction: {}", categoryId, page, size, sortBy, direction);
 
     categoryService.detail(categoryId);
 
-    return productService.listByCategoryId(categoryId, page, size, direction);
+    return productService.listByCategoryId(categoryId, page, size, sortBy, direction);
   }
 
   @Override

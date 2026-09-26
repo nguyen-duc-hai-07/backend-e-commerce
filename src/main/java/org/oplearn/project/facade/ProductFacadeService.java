@@ -10,7 +10,7 @@ public interface ProductFacadeService {
 
   ProductResponse update(ProductRequest request, Long id);
 
-  PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String direction);
+  PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String sortBy, String direction);
 
   PageResponse<ProductResponse> search(String keyword, Long categoryId, int page, int size);
 }
