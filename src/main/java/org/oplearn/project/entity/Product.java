@@ -36,4 +36,12 @@ public class Product extends BaseEntity {
   @Column(name = "review_count", nullable = false)
   @Builder.Default
   private Integer reviewCount = 0;
+
+  @Column(name = "min_price", precision = 15, scale = 2, nullable = false)
+  @Builder.Default
+  private BigDecimal minPrice = BigDecimal.ZERO;
+
+  @Column(name = "sold_count", nullable = false)
+  @Builder.Default
+  private Integer soldCount = 0;
 }
