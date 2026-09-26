@@ -8,4 +8,6 @@ public interface ProductVariantFacadeService {
   ProductVariantResponse create(ProductVariantRequest request);
 
   ProductVariantResponse update(ProductVariantRequest request, Long id);
+
+  void delete(Long id);
 }

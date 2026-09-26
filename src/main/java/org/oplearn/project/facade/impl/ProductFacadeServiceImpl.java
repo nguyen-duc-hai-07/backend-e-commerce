@@ -3,13 +3,17 @@ package org.oplearn.project.facade.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.request.ProductRequest;
-import org.oplearn.project.dto.response.PageResponse;
-import org.oplearn.project.dto.response.ProductResponse;
+import org.oplearn.project.dto.response.*;
 import org.oplearn.project.entity.Product;
 import org.oplearn.project.facade.ProductFacadeService;
 import org.oplearn.project.service.CategoryService;
+import org.oplearn.project.service.ProductImageService;
 import org.oplearn.project.service.ProductService;
+import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Service;
 public class ProductFacadeServiceImpl implements ProductFacadeService {
 
   private final ProductService productService;
+  private final ProductVariantService productVariantService;
+  private final ProductImageService productImageService;
   private final CategoryService categoryService;
 
   @Override
@@ -76,5 +82,18 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
     }
 
     return productService.search(keyword, categoryId, page, size);
+  }
+
+  @Override
+  public ProductDetailResponse detail(Long id) {
+    log.info("(facade) detail with id : {}", id);
+
+    Product product = productService.findByIdOrThrow(id);
+
+    List<ProductVariantResponse> variants = productVariantService.findAllByProductId(id);
+
+    List<ProductImageResponse> images = productImageService.findAllByProductId(id);
+
+    return ProductDetailResponse.of(product, images, variants);
   }
 }

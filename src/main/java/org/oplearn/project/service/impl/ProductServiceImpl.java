@@ -69,12 +69,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductResponse detail(Long id) {
-    log.info("(detail) product id: {}", id);
-    return ProductResponse.from(findByIdOrThrow(id));
-  }
-
-  @Override
   @Transactional
   public void delete(Long id) {
     log.info("(delete) product id: {}", id);

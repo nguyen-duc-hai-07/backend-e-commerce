@@ -12,8 +12,6 @@ public interface ProductService {
 
   Product update(Product product, Long id);
 
-  ProductResponse detail(Long id);
-
   void delete(Long id);
 
   PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String sortBy, String direction);

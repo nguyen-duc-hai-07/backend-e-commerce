@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,7 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
   void softDeleteById(@Param("id") Long id);
 
   List<ProductVariant> findAllByProductIdAndIsDeletedFalse(Long productId);
+
+  @Query("SELECT MIN(pv.price) FROM ProductVariant pv WHERE pv.productId = :productId AND pv.isDeleted = false")
+  Optional<BigDecimal> findMinPriceByProductId(@Param("productId") Long productId);
 }

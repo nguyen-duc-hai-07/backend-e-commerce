@@ -3,6 +3,7 @@ package org.oplearn.project.service;
 import org.oplearn.project.dto.response.ProductVariantResponse;
 import org.oplearn.project.entity.ProductVariant;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductVariantService {
@@ -20,4 +21,6 @@ public interface ProductVariantService {
   List<ProductVariantResponse> findAllByProductId(Long productId);
 
   ProductVariant findByIdOrThrow(Long id);
+
+  BigDecimal findMinPriceByProductId(Long productId);
 }

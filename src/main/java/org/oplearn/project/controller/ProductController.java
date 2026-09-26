@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.request.ProductRequest;
 import org.oplearn.project.dto.response.PageResponse;
+import org.oplearn.project.dto.response.ProductDetailResponse;
 import org.oplearn.project.dto.response.ProductResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
 import org.oplearn.project.facade.ProductFacadeService;
@@ -41,9 +42,9 @@ public class ProductController {
   }
 
   @GetMapping("/{id}")
-  public ResponseGeneral<ProductResponse> detail(@PathVariable("id") Long id) {
+  public ResponseGeneral<ProductDetailResponse> detail(@PathVariable("id") Long id) {
     log.info("(detail) id: {}", id);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.detail(id));
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.detail(id));
   }
 
   @DeleteMapping("/{id}")

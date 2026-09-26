@@ -11,6 +11,9 @@ import org.oplearn.project.repository.ProductVariantRepository;
 import org.oplearn.project.service.ProductService;
 import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 @Slf4j
@@ -22,6 +25,7 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
   private final ProductVariantRepository productVariantRepository;
 
   @Override
+  @Transactional
   public ProductVariantResponse create(ProductVariantRequest request) {
     log.info("(facade) create variant request: {}", request);
 
@@ -41,10 +45,14 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
         .build();
 
     ProductVariant saved = productVariantService.create(variant);
+
+    syncProductMinPrice(saved.getProductId());
+
     return ProductVariantResponse.from(saved);
   }
 
   @Override
+  @Transactional
   public ProductVariantResponse update(ProductVariantRequest request, Long id) {
     log.info("(facade) update variant id: {}, request: {}", id, request);
 
@@ -68,6 +76,31 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
         .build();
 
     ProductVariant updated = productVariantService.update(toUpdate, id);
+
+    syncProductMinPrice(updated.getProductId());
+
     return ProductVariantResponse.from(updated);
+  }
+
+  @Override
+  @Transactional
+  public void delete(Long id) {
+    log.info("(facade) delete variant id: {}", id);
+
+    ProductVariant variant = productVariantService.findByIdOrThrow(id);
+
+    productVariantService.delete(id);
+
+    syncProductMinPrice(variant.getProductId());
+  }
+
+  private void syncProductMinPrice(Long productId) {
+    log.info("(facade) sync product min price");
+
+    productService.findByIdOrThrow(productId);
+
+    BigDecimal minPrice = productVariantService.findMinPriceByProductId(productId);
+
+    productService.updateMinPrice(productId, minPrice);
   }
 }
