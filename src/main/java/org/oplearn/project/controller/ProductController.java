@@ -58,11 +58,12 @@ public class ProductController {
     @PathVariable("categoryId") Long categoryId,
     @RequestParam(value = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page,
     @RequestParam(value = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size,
+    @RequestParam(value = PARAM_SORT_BY, defaultValue = SORT_BY_ID) String sortBy,
     @RequestParam(value = PARAM_DIRECTION, defaultValue = DIRECTION_DESC) String direction
   ) {
-    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, direction: {}", categoryId, page, size, direction);
+    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, sortBy: {}, direction: {}", categoryId, page, size, sortBy, direction);
     size = Math.min(size, MAX_PAGE_SIZE);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.listByCategoryId(categoryId, page, size, direction));
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.listByCategoryId(categoryId, page, size, sortBy, direction));
   }
 
   @GetMapping("/search")

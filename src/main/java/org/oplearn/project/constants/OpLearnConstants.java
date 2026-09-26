@@ -23,6 +23,10 @@ public class OpLearnConstants {
     public static final String PARAM_DIRECTION = "direction";
     public static final String DIRECTION_DESC = "DESC";
     public static final String DIRECTION_ASC = "ASC";
+    public static final String PARAM_SORT_BY = "sort_by";
+    public static final String SORT_BY_ID = "id";
+    public static final String SORT_BY_MIN_PRICE = "min_price";
+    public static final String SORT_BY_SOLD_COUNT = "sold_count";
     public static final String PERCENT = "%";
     public static final String MESSAGE_SOURCE = "classpath:i18n/messages";
     public static final String NOT_FOUND_MESSAGE = "Not found";
