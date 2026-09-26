@@ -93,7 +93,9 @@ public class OpLearnConstants {
 
     public static final String[] HTTP_METHOD_GET_PUBLIC = {
       "/api/v1/categories/**",
-      "/api/v1/products/**"
+      "/api/v1/products/**",
+      "/api/v1/product-variants/**",
+      "/api/v1/product-images/**"
     };
 
     public static final String[] HTTP_METHOD_POST_PUBLIC = {
@@ -112,20 +114,26 @@ public class OpLearnConstants {
     public static final String[] HTTP_METHOD_POST_ADMIN = {
       "/api/v1/users/**",
       "/api/v1/categories/**",
-      "/api/v1/products/**"
+      "/api/v1/products/**",
+      "/api/v1/product-variants/**",
+      "/api/v1/product-images/**"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {
       "/api/v1/users/**",
       "/api/v1/categories/**",
-      "/api/v1/products/**"
+      "/api/v1/products/**",
+      "/api/v1/product-variants/**",
+      "/api/v1/product-images/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
       "/api/v1/users/**",
       "/api/v1/files/**",
       "/api/v1/categories/**",
-      "/api/v1/products/**"
+      "/api/v1/products/**",
+      "/api/v1/product-variants/**",
+      "/api/v1/product-images/**"
     };
 
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};
