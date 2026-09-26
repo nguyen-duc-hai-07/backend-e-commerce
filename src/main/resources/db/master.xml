@@ -29,5 +29,6 @@
   <include file="db/changelog/022-create-table-conversations.xml"/>
   <include file="db/changelog/023-create-table-messages.xml"/>
   <include file="db/changelog/024-add-product-search-index.xml"/>
+  <include file="db/changelog/025-add-product-min-price-and-sold-count.xml"/>
 
 </databaseChangeLog>
