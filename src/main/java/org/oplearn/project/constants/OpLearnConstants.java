@@ -95,7 +95,8 @@ public class OpLearnConstants {
       "/api/v1/categories/**",
       "/api/v1/products/**",
       "/api/v1/product-variants/**",
-      "/api/v1/product-images/**"
+      "/api/v1/product-images/**",
+      "/api/v1/reviews/**"
     };
 
     public static final String[] HTTP_METHOD_POST_PUBLIC = {
