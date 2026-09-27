@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="026-add-partial-indexes-for-reviews" author="ecommerce">
+    <!-- 1. Drop existing standard unique constraint so soft delete allows re-reviewing -->
+    <sql>
+      ALTER TABLE reviews DROP CONSTRAINT IF EXISTS uq_reviews_product_user;
+    </sql>
+
+    <!-- 2. Partial Unique Index: 1 user can only have 1 active review per product -->
+    <sql>
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_reviews_product_user_active
+        ON reviews (product_id, user_id)
+        WHERE is_deleted = false;
+    </sql>
+
+    <!-- 3. Partial Index: Optimize findByRatingAndProductId, AVG rating, and COUNT query -->
+    <sql>
+      CREATE INDEX IF NOT EXISTS idx_reviews_product_rating_id
+        ON reviews (product_id, rating, id DESC)
+        WHERE is_deleted = false;
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
