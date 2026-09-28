@@ -1,0 +1,54 @@
+package org.oplearn.project.dto.response;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.oplearn.project.entity.ReviewReply;
+import org.oplearn.project.entity.User;
+
+import java.time.Instant;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class ReviewReplyResponse {
+  private Long id;
+  private Long reviewId;
+  private Long userId;
+  private String userFullName;
+  private String userAvatarUrl;
+  private String content;
+  private Instant createdAt;
+
+  public static ReviewReplyResponse from(ReviewReply reply) {
+    if (reply == null) {
+      return null;
+    }
+    return ReviewReplyResponse.builder()
+        .id(reply.getId())
+        .reviewId(reply.getReviewId())
+        .userId(reply.getUserId())
+        .content(reply.getContent())
+        .createdAt(reply.getCreatedAt())
+        .build();
+  }
+
+  public static ReviewReplyResponse of(ReviewReply reply, User user) {
+    if (reply == null) {
+      return null;
+    }
+    ReviewReplyResponse response = from(reply);
+    if (user != null) {
+      response.setUserFullName(user.getFullName());
+      response.setUserAvatarUrl(user.getAvatarUrl());
+    }
+    return response;
+  }
+}
