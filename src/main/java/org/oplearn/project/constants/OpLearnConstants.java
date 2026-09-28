@@ -84,6 +84,7 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_GET_PUBLIC = {
+      "/api/v1/locations/**"
     };
 
     public static final String[] HTTP_METHOD_POST_PUBLIC = {

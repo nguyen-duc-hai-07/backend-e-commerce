@@ -9,5 +9,11 @@ public interface AddressFacadeService {
 
   AddressResponse update(AddressRequest request, Long id);
 
+  AddressResponse detail(Long id);
+
+  void delete(Long id);
+
+  void setDefault(Long id);
+
   PageResponse<AddressResponse> list(Long userId);
 }

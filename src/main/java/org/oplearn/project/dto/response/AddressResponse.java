@@ -4,15 +4,11 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.oplearn.project.entity.Address;
 
-import java.time.Instant;
-
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,9 +18,9 @@ public class AddressResponse {
   private Long userId;
   private String recipientName;
   private String phoneNumber;
-  private String province;
-  private String district;
-  private String ward;
+  private String provinceCode;
+  private String districtCode;
+  private String wardCode;
   private String streetAddress;
   private Boolean isDefault;
 
@@ -37,9 +33,9 @@ public class AddressResponse {
         .userId(address.getUserId())
         .recipientName(address.getRecipientName())
         .phoneNumber(address.getPhoneNumber())
-        .province(address.getProvince())
-        .district(address.getDistrict())
-        .ward(address.getWard())
+        .provinceCode(address.getProvinceCode())
+        .districtCode(address.getDistrictCode())
+        .wardCode(address.getWardCode())
         .streetAddress(address.getStreetAddress())
         .isDefault(address.getIsDefault())
         .build();
