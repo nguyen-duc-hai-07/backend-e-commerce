@@ -38,7 +38,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                p.category_id AS "categoryId",
                p.thumbnail_url AS "thumbnailUrl",
                p.average_rating AS "averageRating",
-               p.review_count AS "reviewCount"
+               p.review_count AS "reviewCount",
+               p.min_price AS "minPrice",
+               p.sold_count AS "soldCount"
         FROM products p
         WHERE p.is_deleted = false
           AND (CAST(:categoryId AS bigint) IS NULL OR p.category_id = CAST(:categoryId AS bigint))
@@ -80,6 +82,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     String getThumbnailUrl();
     BigDecimal getAverageRating();
     Integer getReviewCount();
+    BigDecimal getMinPrice();
+    Integer getSoldCount();
   }
 
   @Query(value = "SELECT id FROM products TABLESAMPLE SYSTEM (10) WHERE is_deleted = false AND created_at >= :since  LIMIT :n", nativeQuery = true)
@@ -93,4 +97,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     WHERE p.id IN :ids
     """)
   List<Product> findByIds(@Param("ids") List<Long> ids);
+
+  @Modifying
+  @Query("UPDATE Product p SET p.minPrice = :minPrice WHERE p.id = :id")
+  void updateMinPrice(@Param("id") Long id, @Param("minPrice") BigDecimal minPrice);
+
+  @Modifying
+  @Query("UPDATE Product p SET p.soldCount = p.soldCount + :quantity WHERE p.id = :id")
+  void increaseSoldCount(@Param("id") Long id, @Param("quantity") int quantity);
 }

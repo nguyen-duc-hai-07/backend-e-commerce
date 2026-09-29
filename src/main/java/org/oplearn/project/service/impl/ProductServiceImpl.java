@@ -2,6 +2,8 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.constants.OpLearnConstants;
+import org.oplearn.project.dto.request.ProductFilterRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductResponse;
 import org.oplearn.project.entity.Product;
@@ -16,13 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.DIRECTION_ASC;
-
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.DIRECTION_ASC;
 
 @Service
 @Slf4j
@@ -44,21 +47,30 @@ public class ProductServiceImpl implements ProductService {
     log.info("(update) product id: {}, data: {}", id, product);
 
     Product existingProduct = findByIdOrThrow(id);
-
-    if (product.getName() != null) {
-      existingProduct.setName(product.getName());
-    }
-    if (product.getDescription() != null) {
-      existingProduct.setDescription(product.getDescription());
-    }
-    if (product.getCategoryId() != null) {
-      existingProduct.setCategoryId(product.getCategoryId());
-    }
-    if (product.getThumbnailUrl() != null) {
-      existingProduct.setThumbnailUrl(product.getThumbnailUrl());
-    }
+    setProductValues(existingProduct, product);
 
     return repository.save(existingProduct);
+  }
+
+  private void setProductValues(Product target, Product source) {
+    if (source.getName() != null) {
+      target.setName(source.getName());
+    }
+    if (source.getDescription() != null) {
+      target.setDescription(source.getDescription());
+    }
+    if (source.getCategoryId() != null) {
+      target.setCategoryId(source.getCategoryId());
+    }
+    if (source.getThumbnailUrl() != null) {
+      target.setThumbnailUrl(source.getThumbnailUrl());
+    }
+    if (source.getMinPrice() != null) {
+      target.setMinPrice(source.getMinPrice());
+    }
+    if (source.getSoldCount() != null) {
+      target.setSoldCount(source.getSoldCount());
+    }
   }
 
   @Override
@@ -76,14 +88,42 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String direction) {
-    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, direction: {}", categoryId, page, size, direction);
-    Sort sort = DIRECTION_ASC.equalsIgnoreCase(direction)
-        ? Sort.by("id").ascending()
-        : Sort.by("id").descending();
+  public PageResponse<ProductResponse> listByCategoryId(ProductFilterRequest request) {
+    log.info("(listByCategoryId) categoryId: {}, page: {}, size: {}, sortBy: {}, direction: {}",
+      request.getCategoryId(), request.getPage(), request.getSize(), request.getSortBy(), request.getDirection()
+    );
+
+    if (request.getCategoryId() == null) {
+      request = new ProductFilterRequest();
+    }
+
+    int page = (request.getPage() != null && request.getPage() >= 0) ? request.getPage() : 0;
+    int size = (request.getSize() != null && request.getSize() > 0)
+      ? Math.min(request.getSize(), OpLearnConstants.VariableConstant.MAX_PAGE_SIZE)
+      : Integer.parseInt(OpLearnConstants.VariableConstant.SIZE_DEFAULT);
+
+    String sortProperty = "id";
+    boolean isAsc = DIRECTION_ASC.equalsIgnoreCase(request.getDirection());
+
+    if (request.getSortBy() != null) {
+      String s = request.getSortBy().trim().toLowerCase();
+      if ("min_price".equals(s)) {
+        sortProperty = "minPrice";
+      } else if ("sold_count".equals(s)) {
+        sortProperty = "soldCount";
+      }
+    }
+
+    Sort sort = isAsc
+      ? Sort.by(sortProperty).ascending()
+      : Sort.by(sortProperty).descending();
+
+    if (!"id".equals(sortProperty)) {
+      sort = sort.and(Sort.by("id").descending());
+    }
 
     Pageable pageable = PageRequest.of(page, size, sort);
-    Page<Product> productPage = repository.findByCategoryId(categoryId, pageable);
+    Page<Product> productPage = repository.findByCategoryId(request.getCategoryId(), pageable);
 
     return PageResponse.of(
       productPage.map(ProductResponse::from).getContent(),
@@ -92,14 +132,28 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public PageResponse<ProductResponse> search(String keyword, Long categoryId, int page, int size) {
-    log.info("(search) keyword: {}, categoryId: {}, page: {}, size: {}", keyword, categoryId, page, size);
+  public PageResponse<ProductResponse> search(ProductFilterRequest request) {
+    log.info("(search) keyword: {}, categoryId: {}, page: {}, size: {}",
+      request.getKeyword(), request.getCategoryId(), request.getPage(), request.getSize());
+
+    if(request.getKeyword() == null) {
+      request = new ProductFilterRequest();
+    }
+
+    int page = (request.getPage() != null && request.getPage() >= 0) ? request.getPage() : 0;
+    int size = (request.getSize() != null && request.getSize() > 0)
+      ? Math.min(request.getSize(), OpLearnConstants.VariableConstant.MAX_PAGE_SIZE)
+      : Integer.parseInt(OpLearnConstants.VariableConstant.SIZE_DEFAULT);
+
+    String keyword = request.getKeyword();
+    Long categoryId = request.getCategoryId();
+
     Pageable pageable = PageRequest.of(page, size);
 
     String kw = StringUtils.hasText(keyword) ? keyword.trim() : null;
 
     Page<ProductResponse> productPage = repository.search(kw, categoryId, pageable)
-        .map(ProductResponse::from);
+      .map(ProductResponse::from);
 
     return PageResponse.of(
       productPage.getContent(),
@@ -135,5 +189,19 @@ public class ProductServiceImpl implements ProductService {
   public Product findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(ProductNotFoundException::new);
+  }
+
+  @Override
+  @Transactional
+  public void updateMinPrice(Long id, BigDecimal minPrice) {
+    log.info("(updateMinPrice) id: {}, minPrice: {}", id, minPrice);
+    repository.updateMinPrice(id, minPrice);
+  }
+
+  @Override
+  @Transactional
+  public void increaseSoldCount(Long id, int quantity) {
+    log.info("(increaseSoldCount) id: {}, quantity: {}", id, quantity);
+    repository.increaseSoldCount(id, quantity);
   }
 }

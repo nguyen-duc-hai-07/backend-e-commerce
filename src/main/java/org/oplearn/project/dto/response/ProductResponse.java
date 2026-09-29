@@ -4,16 +4,14 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.oplearn.project.entity.Product;
 import org.oplearn.project.repository.ProductRepository;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +24,8 @@ public class ProductResponse {
   private String thumbnailUrl;
   private BigDecimal averageRating;
   private Integer reviewCount;
+  private BigDecimal minPrice;
+  private Integer soldCount;
 
   public static ProductResponse from(Product product) {
     if (product == null) {
@@ -39,6 +39,8 @@ public class ProductResponse {
         .thumbnailUrl(product.getThumbnailUrl())
         .averageRating(product.getAverageRating())
         .reviewCount(product.getReviewCount())
+        .minPrice(product.getMinPrice())
+        .soldCount(product.getSoldCount())
         .build();
   }
 
@@ -54,6 +56,8 @@ public class ProductResponse {
         .thumbnailUrl(row.getThumbnailUrl())
         .averageRating(row.getAverageRating())
         .reviewCount(row.getReviewCount())
+        .minPrice(row.getMinPrice())
+        .soldCount(row.getSoldCount())
         .build();
   }
 }
