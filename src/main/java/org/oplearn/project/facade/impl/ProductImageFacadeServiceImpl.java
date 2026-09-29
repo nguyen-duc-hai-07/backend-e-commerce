@@ -9,6 +9,7 @@ import org.oplearn.project.facade.ProductImageFacadeService;
 import org.oplearn.project.service.ProductImageService;
 import org.oplearn.project.service.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -19,6 +20,7 @@ public class ProductImageFacadeServiceImpl implements ProductImageFacadeService 
   private final ProductService productService;
 
   @Override
+  @Transactional
   public ProductImageResponse create(ProductImageRequest request) {
     log.info("(facade) create productImage request: {}", request);
 
@@ -35,6 +37,7 @@ public class ProductImageFacadeServiceImpl implements ProductImageFacadeService 
   }
 
   @Override
+  @Transactional
   public ProductImageResponse update(ProductImageRequest request, Long id) {
     log.info("(facade) update productImage id: {}, request: {}", id, request);
 

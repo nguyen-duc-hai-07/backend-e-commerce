@@ -1,5 +1,6 @@
 package org.oplearn.project.service;
 
+import org.oplearn.project.dto.request.CategoryFilterRequest;
 import org.oplearn.project.dto.request.CategoryRequest;
 import org.oplearn.project.dto.response.CategoryResponse;
 import org.oplearn.project.dto.response.PageResponse;
@@ -16,5 +17,5 @@ public interface CategoryService {
 
   CategoryResponse findBySlug(String slug);
 
-  PageResponse<CategoryResponse> list(String keyword , int size, int page , boolean isAll);
+  PageResponse<CategoryResponse> filter(CategoryFilterRequest request);
 }

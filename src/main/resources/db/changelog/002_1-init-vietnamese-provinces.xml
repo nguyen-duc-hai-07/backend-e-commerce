@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="002_1-create-vietnamese-units-tables" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="provinces"/>
+      </not>
+    </preConditions>
+    <sqlFile path="data/CreateTables_vn_units.sql"
+             relativeToChangelogFile="true"
+             encoding="UTF-8"
+             splitStatements="true"
+             stripComments="true"/>
+  </changeSet>
+
+  <changeSet id="002_2-import-vietnamese-units-data" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">SELECT COUNT(*) FROM provinces</sqlCheck>
+    </preConditions>
+    <sqlFile path="data/ImportData_vn_units.sql"
+             relativeToChangelogFile="true"
+             encoding="UTF-8"
+             splitStatements="true"
+             stripComments="true"/>
+  </changeSet>
+
+</databaseChangeLog>
