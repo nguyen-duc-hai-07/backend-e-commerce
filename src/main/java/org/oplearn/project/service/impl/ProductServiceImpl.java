@@ -212,7 +212,15 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Product findByIdOrThrow(Long id) {
+  public void checkProductExist(Long id) {
+    log.debug("(checkProductExist) id: {}", id);
+    if (!repository.existsByIdAndIsDeletedFalse(id)) {
+      log.error("(checkProductExist) product not found: {}", id);
+      throw new ProductNotFoundException();
+    }
+  }
+
+  private Product findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(ProductNotFoundException::new);
   }
