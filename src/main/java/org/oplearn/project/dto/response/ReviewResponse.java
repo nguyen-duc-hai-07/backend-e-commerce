@@ -51,4 +51,15 @@ public class ReviewResponse {
     }
     return response;
   }
+
+  public static ReviewResponse of(ReviewResponse response, User user) {
+    if (response == null) {
+      return null;
+    }
+    if (user != null) {
+      response.setUserFullName(user.getFullName());
+      response.setUserAvatarUrl(user.getAvatarUrl());
+    }
+    return response;
+  }
 }
