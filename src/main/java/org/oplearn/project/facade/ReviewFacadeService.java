@@ -1,5 +1,6 @@
 package org.oplearn.project.facade;
 
+import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.request.ReviewRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
@@ -13,7 +14,7 @@ public interface ReviewFacadeService {
 
   void delete(Long id);
 
-  PageResponse<ReviewResponse> findByRatingAndProductId(Integer rating , Long productId, int page, int size);
+  PageResponse<ReviewResponse> findByRatingAndProductId(ReviewFilterRequest request);
 
   ReviewResponse detail(Long id);
 }

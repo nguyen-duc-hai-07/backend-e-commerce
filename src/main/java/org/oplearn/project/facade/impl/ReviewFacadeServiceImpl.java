@@ -2,6 +2,7 @@ package org.oplearn.project.facade.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.request.ReviewRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
@@ -118,12 +119,12 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   }
 
   @Override
-  public PageResponse<ReviewResponse> findByRatingAndProductId(Integer rating, Long productId, int page, int size) {
-    log.info("(facade) find reviews by rating: {}, productId: {}, page: {}, size: {}", rating, productId, page, size);
+  public PageResponse<ReviewResponse> findByRatingAndProductId(ReviewFilterRequest request) {
+    log.info("(facade) find reviews request: {}", request);
 
-    Product product = productService.findByIdOrThrow(productId);
+    productService.findByIdOrThrow(request.getProductId());
 
-    return reviewService.findByRatingAndProductId(rating, product.getId(), page, size);
+    return reviewService.findByRatingAndProductId(request);
   }
 
   @Override
