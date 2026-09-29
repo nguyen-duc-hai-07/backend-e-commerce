@@ -18,6 +18,8 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
+  boolean existsByIdAndIsDeletedFalse(Long id);
+
   boolean existsByNameAndIsDeletedFalse(String name);
 
   boolean existsByNameAndIdNotAndIsDeletedFalse(String name, Long id);
