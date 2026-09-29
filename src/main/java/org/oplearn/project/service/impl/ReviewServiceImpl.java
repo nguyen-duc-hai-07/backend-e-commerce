@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.constants.OpLearnConstants;
 import org.oplearn.project.dto.request.ReviewFilterRequest;
+import org.oplearn.project.dto.request.ReviewRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
 import org.oplearn.project.entity.Review;
@@ -27,31 +28,50 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional
-  public Review create(Review review) {
+  public ReviewResponse create(ReviewRequest request) {
     log.info("(service) create review");
 
-    if (repository.existsByProductIdAndUserIdAndIsDeletedFalse(review.getProductId(), review.getUserId())) {
+    if (repository.existsByProductIdAndUserIdAndIsDeletedFalse(request.getProductId(), request.getUserId())) {
       throw new ReviewAlreadyExistedException();
     }
 
-    return repository.save(review);
+    Review review = Review.builder()
+      .productId(request.getProductId())
+      .userId(request.getUserId())
+      .rating(request.getRating())
+      .comment(request.getComment() != null ? request.getComment().trim() : null)
+      .build();
+
+    Review saved = repository.save(review);
+    return ReviewResponse.from(saved);
   }
 
   @Override
   @Transactional
-  public Review update(Review review, Long id) {
+  public ReviewResponse update(ReviewRequest request, Long id) {
     log.info("(service) update review");
 
     Review existingReview = findByIdOrThrow(id);
 
-    if (review.getRating() != null) {
-      existingReview.setRating(review.getRating());
-    }
-    if (review.getComment() != null) {
-      existingReview.setComment(review.getComment());
-    }
+    setReviewValues(existingReview, request);
 
-    return repository.save(existingReview);
+    Review updated = repository.save(existingReview);
+    return ReviewResponse.from(updated);
+  }
+
+  private void setReviewValues(Review target, ReviewRequest source) {
+    if (source.getRating() != null) {
+      target.setRating(source.getRating());
+    }
+    if (source.getComment() != null) {
+      target.setComment(source.getComment().trim());
+    }
+  }
+
+  @Override
+  public ReviewResponse detail(Long id) {
+    log.info("(detail) id: {}", id);
+    return ReviewResponse.from(findByIdOrThrow(id));
   }
 
   @Override
@@ -64,8 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
     repository.softDeleteById(id);
   }
 
-  @Override
-  public Review findByIdOrThrow(Long id) {
+  private Review findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(ReviewNotFoundException::new);
   }

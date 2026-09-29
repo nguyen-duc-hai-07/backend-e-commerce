@@ -1,14 +1,13 @@
 package org.oplearn.project.service;
 
+import org.oplearn.project.dto.request.AddressRequest;
 import org.oplearn.project.dto.response.AddressResponse;
 import org.oplearn.project.dto.response.PageResponse;
-import org.oplearn.project.entity.Address;
-import org.springframework.data.domain.PageRequest;
 
 public interface AddressService {
-  Address create(Address address);
+  AddressResponse create(AddressRequest request);
 
-  Address update(Address address , Long id);
+  AddressResponse update(AddressRequest request , Long id);
 
   AddressResponse detail(Long id);
 

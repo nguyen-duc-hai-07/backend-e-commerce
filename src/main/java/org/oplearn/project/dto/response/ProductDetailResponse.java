@@ -2,8 +2,10 @@ package org.oplearn.project.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.*;
-import org.oplearn.project.entity.Product;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,7 +31,7 @@ public class ProductDetailResponse {
   private List<ProductVariantResponse> variants;
 
   public static ProductDetailResponse of(
-    Product product,
+    ProductResponse product,
     List<ProductImageResponse> images,
     List<ProductVariantResponse> variants
   ) {
