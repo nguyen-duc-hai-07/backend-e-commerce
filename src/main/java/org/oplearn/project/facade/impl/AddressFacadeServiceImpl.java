@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.request.AddressRequest;
 import org.oplearn.project.dto.response.AddressResponse;
 import org.oplearn.project.dto.response.PageResponse;
-import org.oplearn.project.entity.Address;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.AddressFacadeService;
 import org.oplearn.project.service.AddressService;
+import org.oplearn.project.service.AdministrativeUnitService;
 import org.oplearn.project.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AddressFacadeServiceImpl implements AddressFacadeService {
   private final AddressService addressService;
   private final UserService userService;
+  private final AdministrativeUnitService administrativeUnitService;
 
   private User currentUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -39,21 +40,12 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
   public AddressResponse create(AddressRequest request) {
     log.info("(facade) create address");
 
+    this.checkAddressComponentsExist(request);
+
     User currentUser = currentUser();
+    request.setUserId(currentUser.getId());
 
-    Address address = Address.builder()
-      .userId(currentUser.getId())
-      .recipientName(request.getRecipientName())
-      .phoneNumber(request.getPhoneNumber())
-      .provinceCode(request.getProvinceCode())
-      .districtCode(request.getDistrictCode())
-      .wardCode(request.getWardCode())
-      .streetAddress(request.getStreetAddress())
-      .build();
-
-    Address savedAddress = addressService.create(address);
-
-    return AddressResponse.from(savedAddress);
+    return addressService.create(request);
   }
 
   @Override
@@ -70,19 +62,25 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
       throw new UserUnauthorizedException();
     }
 
-    Address address = Address.builder()
-      .userId(existing.getUserId())
-      .recipientName(request.getRecipientName())
-      .phoneNumber(request.getPhoneNumber())
-      .provinceCode(request.getProvinceCode())
-      .districtCode(request.getDistrictCode())
-      .wardCode(request.getWardCode())
-      .streetAddress(request.getStreetAddress())
-      .build();
+    this.checkAddressComponentsExist(request);
 
-    Address updatedAddress = addressService.update(address, id);
+    request.setUserId(existing.getUserId());
 
-    return AddressResponse.from(updatedAddress);
+    return addressService.update(request, id);
+  }
+
+  private void checkAddressComponentsExist(AddressRequest request) {
+    log.debug("(facade) checkAddressComponentsExist");
+
+    if (request.getProvinceCode() != null) {
+      administrativeUnitService.checkProvinceExist(request.getProvinceCode());
+    }
+    if (request.getDistrictCode() != null) {
+      administrativeUnitService.checkDistrictExist(request.getDistrictCode());
+    }
+    if (request.getWardCode() != null) {
+      administrativeUnitService.checkWardExist(request.getWardCode());
+    }
   }
 
   @Override
