@@ -3,6 +3,7 @@ package org.oplearn.project.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.constants.OpLearnConstants;
+import org.oplearn.project.dto.request.CategoryFilterRequest;
 import org.oplearn.project.dto.request.CategoryRequest;
 import org.oplearn.project.dto.response.CategoryResponse;
 import org.oplearn.project.dto.response.PageResponse;
@@ -90,13 +91,24 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public PageResponse<CategoryResponse> list(String keyword , int size, int page , boolean isAll) {
+  public PageResponse<CategoryResponse> filter(CategoryFilterRequest request) {
+    if (request == null) {
+      request = new CategoryFilterRequest();
+    }
+
+    int page = (request.getPage() != null && request.getPage() >= 0) ? request.getPage() : 0;
+    int size = (request.getSize() != null && request.getSize() > 0)
+        ? Math.min(request.getSize(), OpLearnConstants.VariableConstant.MAX_PAGE_SIZE)
+        : Integer.parseInt(OpLearnConstants.VariableConstant.SIZE_DEFAULT);
+    boolean isAll = Boolean.TRUE.equals(request.getIsAll());
+    String keyword = request.getKeyword();
+
     Pageable pageable = isAll
       ? PageRequest.of(0, OpLearnConstants.VariableConstant.MAX_ALL_SIZE)
       : PageRequest.of(page, size);
 
     Page<Category> categories = StringUtils.hasText(keyword)
-      ? repository.search(keyword , pageable)
+      ? repository.search(keyword.trim(), pageable)
       : repository.findAllByIsDeletedFalse(pageable);
 
     return PageResponse.of(
