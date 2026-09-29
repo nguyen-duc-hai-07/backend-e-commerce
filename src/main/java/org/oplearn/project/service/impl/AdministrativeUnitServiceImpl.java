@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.response.DistrictResponse;
 import org.oplearn.project.dto.response.ProvinceResponse;
 import org.oplearn.project.dto.response.WardResponse;
+import org.oplearn.project.exception.DistrictNotFoundException;
+import org.oplearn.project.exception.ProvinceNotFoundException;
+import org.oplearn.project.exception.WardNotFoundException;
 import org.oplearn.project.repository.DistrictRepository;
 import org.oplearn.project.repository.ProvinceRepository;
 import org.oplearn.project.repository.WardRepository;
@@ -44,5 +47,29 @@ public class AdministrativeUnitServiceImpl implements AdministrativeUnitService 
     return wardRepository.findByDistrictCodeOrderByNameAsc(districtCode).stream()
         .map(WardResponse::from)
         .toList();
+  }
+
+  @Override
+  public void checkProvinceExist(String provinceCode) {
+    if (!provinceRepository.existsById(provinceCode)) {
+      log.error("(checkProvinceExist) province not found: {}", provinceCode);
+      throw new ProvinceNotFoundException();
+    }
+  }
+
+  @Override
+  public void checkDistrictExist(String districtCode) {
+    if (!districtRepository.existsById(districtCode)) {
+      log.error("(checkDistrictExist) district not found: {}", districtCode);
+      throw new DistrictNotFoundException();
+    }
+  }
+
+  @Override
+  public void checkWardExist(String wardCode) {
+    if (!wardRepository.existsById(wardCode)) {
+      log.error("(checkWardExist) ward not found: {}", wardCode);
+      throw new WardNotFoundException();
+    }
   }
 }
