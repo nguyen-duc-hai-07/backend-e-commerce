@@ -1,5 +1,6 @@
 package org.oplearn.project.service;
 
+import org.oplearn.project.dto.request.ProductVariantRequest;
 import org.oplearn.project.dto.response.ProductVariantResponse;
 import org.oplearn.project.entity.ProductVariant;
 
@@ -7,9 +8,9 @@ import java.util.List;
 
 public interface ProductVariantService {
 
-  ProductVariant create(ProductVariant productVariant);
+  ProductVariantResponse create(ProductVariantRequest request);
 
-  ProductVariant update(ProductVariant productVariant, Long id);
+  ProductVariantResponse update(ProductVariantRequest request, Long id);
 
   ProductVariantResponse detail(Long id);
 
