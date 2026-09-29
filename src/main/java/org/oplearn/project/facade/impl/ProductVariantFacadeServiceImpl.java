@@ -23,7 +23,7 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
   public ProductVariantResponse create(ProductVariantRequest request) {
     log.info("(facade) create variant request: {}", request);
 
-    productService.findByIdOrThrow(request.getProductId());
+    productService.checkProductExist(request.getProductId());
 
     return productVariantService.create(request);
   }
@@ -34,7 +34,7 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
     log.info("(facade) update variant id: {}, request: {}", id, request);
 
     if (request.getProductId() != null) {
-      productService.findByIdOrThrow(request.getProductId());
+      productService.checkProductExist(request.getProductId());
     }
 
     return productVariantService.update(request, id);
