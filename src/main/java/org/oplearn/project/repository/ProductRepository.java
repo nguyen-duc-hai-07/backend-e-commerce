@@ -18,6 +18,10 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
   Optional<Product> findByIdAndIsDeletedFalse(Long id);
 
+  boolean existsByNameAndIsDeletedFalse(String name);
+
+  boolean existsByNameAndIdNotAndIsDeletedFalse(String name, Long id);
+
   @Modifying
   @Query("UPDATE Product p SET p.isDeleted = true WHERE p.id = :id AND p.isDeleted = false")
   void softDeleteById(@Param("id") Long id);
