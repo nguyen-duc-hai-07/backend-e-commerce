@@ -3,6 +3,7 @@ package org.oplearn.project.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.request.ReviewRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
@@ -12,12 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.CREATED_MESSAGE;
-import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.PARAM_PAGE;
-import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.PARAM_SIZE;
 import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.SUCCESS_MESSAGE;
-import static org.oplearn.project.constants.OpLearnConstants.VariableConstant.MAX_PAGE_SIZE;
-import static org.oplearn.project.constants.OpLearnConstants.VariableConstant.PAGE_DEFAULT;
-import static org.oplearn.project.constants.OpLearnConstants.VariableConstant.SIZE_DEFAULT;
 
 @RestController
 @Slf4j
@@ -59,12 +55,10 @@ public class ReviewController {
   @GetMapping("/product/{productId}")
   public ResponseGeneral<PageResponse<ReviewResponse>> findByRatingAndProductId(
       @PathVariable("productId") Long productId,
-      @RequestParam(value = "rating", required = false) Integer rating,
-      @RequestParam(value = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page,
-      @RequestParam(value = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size
+      @Valid @RequestBody ReviewFilterRequest request
   ) {
-    log.info("(findByRatingAndProductId) productId: {}, rating: {}, page: {}, size: {}", productId, rating, page, size);
-    size = Math.min(size, MAX_PAGE_SIZE);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findByRatingAndProductId(rating, productId, page, size));
+    request.setProductId(productId);
+    log.info("(findByRatingAndProductId) productId: {}, request: {}", productId, request);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findByRatingAndProductId(request));
   }
 }

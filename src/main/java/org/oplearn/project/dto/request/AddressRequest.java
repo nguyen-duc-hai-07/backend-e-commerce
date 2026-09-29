@@ -5,19 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AddressRequest {
-
-  private Long userId;
 
   @NotBlank(message = "address.recipient_name.not_blank")
   private String recipientName;
@@ -25,14 +21,14 @@ public class AddressRequest {
   @NotBlank(message = "address.phone_number.not_blank")
   private String phoneNumber;
 
-  @NotBlank(message = "address.province.not_blank")
-  private String province;
+  @NotBlank(message = "address.province_code.not_blank")
+  private String provinceCode;
 
-  @NotBlank(message = "address.district.not_blank")
-  private String district;
+  @NotBlank(message = "address.district_code.not_blank")
+  private String districtCode;
 
-  @NotBlank(message = "address.ward.not_blank")
-  private String ward;
+  @NotBlank(message = "address.ward_code.not_blank")
+  private String wardCode;
 
   @NotBlank(message = "address.street_address.not_blank")
   private String streetAddress;
