@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.request.ReviewReplyRequest;
 import org.oplearn.project.dto.response.ReviewReplyResponse;
-import org.oplearn.project.entity.Review;
-import org.oplearn.project.entity.ReviewReply;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.facade.ReplyFacadeService;
 import org.oplearn.project.service.ReviewReplyService;
@@ -36,15 +34,11 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
 
     User user = currentUser();
 
-    Review review = reviewService.findByIdOrThrow(request.getReviewId());
+    reviewService.detail(request.getReviewId());
 
-    ReviewReply reviewReply = ReviewReply.builder()
-      .content(request.getContent())
-      .userId(user.getId())
-      .reviewId(review.getId())
-      .build();
+    request.setUserId(user.getId());
 
-    ReviewReply saved = reviewReplyService.create(reviewReply);
+    ReviewReplyResponse saved = reviewReplyService.create(request);
 
     return ReviewReplyResponse.of(saved, user);
   }
@@ -54,7 +48,7 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
   public ReviewReplyResponse update(String content, Long id) {
     log.info("(facade) update reply");
 
-    ReviewReply updated = reviewReplyService.update(content, id);
+    ReviewReplyResponse updated = reviewReplyService.update(content, id);
 
     return ReviewReplyResponse.of(updated, currentUser());
   }
@@ -63,7 +57,7 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
   public ReviewReplyResponse detail(Long id) {
     log.info("(facade) detail reply");
 
-    ReviewReply reviewReply = reviewReplyService.findByIdOrThrow(id);
+    ReviewReplyResponse reviewReply = reviewReplyService.detail(id);
 
     return ReviewReplyResponse.of(reviewReply, currentUser());
   }
@@ -72,9 +66,9 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
   public ReviewReplyResponse findByReviewId(Long reviewId) {
     log.info("(facade) findByReviewId reply");
 
-    Review review = reviewService.findByIdOrThrow(reviewId);
+    reviewService.detail(reviewId);
 
-    ReviewReply reviewReply = reviewReplyService.findByReviewId(reviewId);
+    ReviewReplyResponse reviewReply = reviewReplyService.findByReviewId(reviewId);
 
     return ReviewReplyResponse.of(reviewReply, currentUser());
   }
