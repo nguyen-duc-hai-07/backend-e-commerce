@@ -21,6 +21,7 @@ public class AddressServiceImpl implements AddressService {
   private final AddressRepository repository;
 
   @Override
+  @Transactional
   public Address create(Address address) {
     log.info("create address");
 
@@ -43,11 +44,11 @@ public class AddressServiceImpl implements AddressService {
     if (existingAddress != null) {
       existingAddress.setUserId(address.getUserId());
     }
-    existingAddress.setProvince(address.getProvince());
+    existingAddress.setProvinceCode(address.getProvinceCode());
+    existingAddress.setDistrictCode(address.getDistrictCode());
+    existingAddress.setWardCode(address.getWardCode());
     existingAddress.setRecipientName(address.getRecipientName());
     existingAddress.setPhoneNumber(address.getPhoneNumber());
-    existingAddress.setDistrict(address.getDistrict());
-    existingAddress.setWard(address.getWard());
     existingAddress.setStreetAddress(address.getStreetAddress());
 
     return repository.save(existingAddress);
@@ -65,7 +66,7 @@ public class AddressServiceImpl implements AddressService {
     repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(AddressNotFoundException::new);
 
-    repository.deleteById(id);
+    repository.softDeleteById(id);
   }
 
   @Override
@@ -79,6 +80,7 @@ public class AddressServiceImpl implements AddressService {
     repository.setDefaultAsTrue(id);
   }
 
+  @Override
   public PageResponse<AddressResponse> list(Long userId) {
     return PageResponse.of(
       repository.findByUserIdAndIsDeletedFalse(userId).stream()

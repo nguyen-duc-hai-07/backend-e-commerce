@@ -14,6 +14,7 @@ import org.oplearn.project.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,27 +35,19 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
   }
 
   @Override
+  @Transactional
   public AddressResponse create(AddressRequest request) {
     log.info("(facade) create address");
 
     User currentUser = currentUser();
 
-    boolean isSelf = request.getUserId() == null || currentUser.getId().equals(request.getUserId());
-
-    if (!isAdmin() && !isSelf) {
-      log.warn("(create) user not authorized");
-      throw new UserUnauthorizedException();
-    }
-
-    Long targetUserId = (isAdmin() && request.getUserId() != null) ? request.getUserId() : currentUser.getId();
-
     Address address = Address.builder()
-      .userId(targetUserId)
+      .userId(currentUser.getId())
       .recipientName(request.getRecipientName())
       .phoneNumber(request.getPhoneNumber())
-      .province(request.getProvince())
-      .district(request.getDistrict())
-      .ward(request.getWard())
+      .provinceCode(request.getProvinceCode())
+      .districtCode(request.getDistrictCode())
+      .wardCode(request.getWardCode())
       .streetAddress(request.getStreetAddress())
       .build();
 
@@ -64,6 +57,7 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
   }
 
   @Override
+  @Transactional
   public AddressResponse update(AddressRequest request, Long id) {
     log.info("(facade) update address id: {}", id);
 
@@ -80,9 +74,9 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
       .userId(existing.getUserId())
       .recipientName(request.getRecipientName())
       .phoneNumber(request.getPhoneNumber())
-      .province(request.getProvince())
-      .district(request.getDistrict())
-      .ward(request.getWard())
+      .provinceCode(request.getProvinceCode())
+      .districtCode(request.getDistrictCode())
+      .wardCode(request.getWardCode())
       .streetAddress(request.getStreetAddress())
       .build();
 
@@ -108,6 +102,7 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
   }
 
   @Override
+  @Transactional
   public void delete(Long id) {
     log.info("(facade) delete address id: {}", id);
 
@@ -124,6 +119,7 @@ public class AddressFacadeServiceImpl implements AddressFacadeService {
   }
 
   @Override
+  @Transactional
   public void setDefault(Long id) {
     log.info("(facade) setDefault address id: {}", id);
 
