@@ -41,17 +41,19 @@ public class AddressServiceImpl implements AddressService {
 
     Address existingAddress = repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(AddressNotFoundException::new);
-    if (existingAddress != null) {
-      existingAddress.setUserId(address.getUserId());
-    }
-    existingAddress.setProvinceCode(address.getProvinceCode());
-    existingAddress.setDistrictCode(address.getDistrictCode());
-    existingAddress.setWardCode(address.getWardCode());
-    existingAddress.setRecipientName(address.getRecipientName());
-    existingAddress.setPhoneNumber(address.getPhoneNumber());
-    existingAddress.setStreetAddress(address.getStreetAddress());
+    setAddressValues(existingAddress, address);
 
     return repository.save(existingAddress);
+  }
+
+  private void setAddressValues(Address target, Address source) {
+    target.setUserId(source.getUserId());
+    target.setProvinceCode(source.getProvinceCode());
+    target.setDistrictCode(source.getDistrictCode());
+    target.setWardCode(source.getWardCode());
+    target.setRecipientName(source.getRecipientName());
+    target.setPhoneNumber(source.getPhoneNumber());
+    target.setStreetAddress(source.getStreetAddress());
   }
 
   @Override
