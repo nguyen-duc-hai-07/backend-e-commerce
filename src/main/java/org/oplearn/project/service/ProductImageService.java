@@ -2,7 +2,6 @@ package org.oplearn.project.service;
 
 import org.oplearn.project.dto.request.ProductImageRequest;
 import org.oplearn.project.dto.response.ProductImageResponse;
-import org.oplearn.project.entity.ProductImage;
 
 import java.util.List;
 
@@ -17,6 +16,4 @@ public interface ProductImageService {
   void delete(Long id);
 
   List<ProductImageResponse> findAllByProductId(Long productId);
-
-  ProductImage findByIdOrThrow(Long id);
 }
