@@ -19,7 +19,7 @@
     <!-- Cố định UTF-8 để file i18n tiếng Việt không vỡ khi build trên máy khác -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
     <springdoc.version>2.3.0</springdoc.version>
     <jjwt.version>0.12.5</jjwt.version>
     <aws.sdk.version>2.25.16</aws.sdk.version>

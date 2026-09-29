@@ -6,6 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
   <changeSet id="003-create-addresses" author="ecommerce">
+    <validCheckSum>any</validCheckSum>
     <createTable tableName="addresses">
       <column name="id" type="BIGSERIAL">
         <constraints primaryKey="true" nullable="false"/>
@@ -26,16 +27,22 @@
         <constraints nullable="false"/>
       </column>
 
-      <column name="province" type="VARCHAR(100)">
-        <constraints nullable="false"/>
+      <column name="province_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_province"
+                     references="provinces(code)"/>
       </column>
 
-      <column name="district" type="VARCHAR(100)">
-        <constraints nullable="false"/>
+      <column name="district_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_district"
+                     references="districts(code)"/>
       </column>
 
-      <column name="ward" type="VARCHAR(100)">
-        <constraints nullable="false"/>
+      <column name="ward_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_ward"
+                     references="wards(code)"/>
       </column>
 
       <column name="street_address" type="VARCHAR(255)">
@@ -60,6 +67,51 @@
 
     <createIndex tableName="addresses" indexName="idx_addresses_user_id">
       <column name="user_id"/>
+    </createIndex>
+    <createIndex tableName="addresses" indexName="idx_addresses_province_code">
+      <column name="province_code"/>
+    </createIndex>
+    <createIndex tableName="addresses" indexName="idx_addresses_district_code">
+      <column name="district_code"/>
+    </createIndex>
+    <createIndex tableName="addresses" indexName="idx_addresses_ward_code">
+      <column name="ward_code"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="003-migrate-addresses-columns" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="addresses" columnName="province"/>
+    </preConditions>
+    <sql>TRUNCATE TABLE addresses CASCADE;</sql>
+    <dropColumn tableName="addresses" columnName="province"/>
+    <dropColumn tableName="addresses" columnName="district"/>
+    <dropColumn tableName="addresses" columnName="ward"/>
+    <addColumn tableName="addresses">
+      <column name="province_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_province"
+                     references="provinces(code)"/>
+      </column>
+      <column name="district_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_district"
+                     references="districts(code)"/>
+      </column>
+      <column name="ward_code" type="VARCHAR(20)">
+        <constraints nullable="false"
+                     foreignKeyName="fk_addresses_ward"
+                     references="wards(code)"/>
+      </column>
+    </addColumn>
+    <createIndex tableName="addresses" indexName="idx_addresses_province_code">
+      <column name="province_code"/>
+    </createIndex>
+    <createIndex tableName="addresses" indexName="idx_addresses_district_code">
+      <column name="district_code"/>
+    </createIndex>
+    <createIndex tableName="addresses" indexName="idx_addresses_ward_code">
+      <column name="ward_code"/>
     </createIndex>
   </changeSet>
 
