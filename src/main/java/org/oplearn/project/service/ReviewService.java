@@ -1,5 +1,6 @@
 package org.oplearn.project.service;
 
+import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
 import org.oplearn.project.entity.Review;
@@ -15,7 +16,7 @@ public interface ReviewService {
 
   Review findByIdOrThrow(Long id);
 
-  PageResponse<ReviewResponse> findByRatingAndProductId(Integer rating, Long productId , int page, int size);
+  PageResponse<ReviewResponse> findByRatingAndProductId(ReviewFilterRequest request);
 
   BigDecimal findAverageRatingByProductId(Long productId);
 

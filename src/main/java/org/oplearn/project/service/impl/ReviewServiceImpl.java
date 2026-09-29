@@ -2,6 +2,8 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.constants.OpLearnConstants;
+import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
 import org.oplearn.project.entity.Review;
@@ -69,12 +71,21 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public PageResponse<ReviewResponse> findByRatingAndProductId(Integer rating, Long productId, int page, int size) {
-    log.info("(service) find with rating: {}, productId: {}, page: {}, size:", rating, productId, page, size);
+  public PageResponse<ReviewResponse> findByRatingAndProductId(ReviewFilterRequest request) {
+    log.info("(service) find reviews request: {}", request);
+
+    int page = (request.getPage() != null && request.getPage() >= 0) ? request.getPage() : 0;
+    int size = (request.getSize() != null && request.getSize() > 0)
+        ? Math.min(request.getSize(), OpLearnConstants.VariableConstant.MAX_PAGE_SIZE)
+        : Integer.parseInt(OpLearnConstants.VariableConstant.SIZE_DEFAULT);
 
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<ReviewResponse> response = repository.findByRatingAndProductId(rating , productId , pageable);
+    Page<ReviewResponse> response = repository.findByRatingAndProductId(
+        request.getRating(),
+        request.getProductId(),
+        pageable
+    );
 
     return PageResponse.of(
       response.getContent(),
