@@ -6,8 +6,6 @@ import org.oplearn.project.dto.request.ReviewFilterRequest;
 import org.oplearn.project.dto.request.ReviewRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ReviewResponse;
-import org.oplearn.project.entity.Product;
-import org.oplearn.project.entity.Review;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ReviewFacadeService;
@@ -45,24 +43,18 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   public ReviewResponse create(ReviewRequest request) {
     log.info("(facade) create review");
 
-    Product product = productService.findByIdOrThrow(request.getProductId());
+    productService.checkProductExist(request.getProductId());
 
     User currentUser = currentUser();
+    request.setUserId(currentUser.getId());
 
-    Review review = Review.builder()
-      .rating(request.getRating())
-      .comment(request.getComment() != null ? request.getComment().trim() : null)
-      .productId(product.getId())
-      .userId(currentUser.getId())
-      .build();
+    ReviewResponse saved = reviewService.create(request);
 
-    Review saved = reviewService.create(review);
+    syncProductAverageRating(request.getProductId());
 
-    syncProductAverageRating(product.getId());
+    syncProductReviewCount(request.getProductId());
 
-    syncProductReviewCount(product.getId());
-
-    return ReviewResponse.of(saved , currentUser);
+    return ReviewResponse.of(saved, currentUser);
   }
 
   @Override
@@ -72,7 +64,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
 
     User currentUser = currentUser();
 
-    Review existing = reviewService.findByIdOrThrow(id);
+    ReviewResponse existing = reviewService.detail(id);
 
     boolean isOwner = currentUser.getId().equals(existing.getUserId());
 
@@ -81,12 +73,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
       throw new UserUnauthorizedException();
     }
 
-    Review review = Review.builder()
-      .rating(request.getRating())
-      .comment(request.getComment() != null ? request.getComment().trim() : null)
-      .build();
-
-    Review updated = reviewService.update(review, id);
+    ReviewResponse updated = reviewService.update(request, id);
 
     if (request.getRating() != null && !request.getRating().equals(existing.getRating())) {
       syncProductAverageRating(existing.getProductId());
@@ -100,7 +87,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   public void delete(Long id) {
     log.info("(facade) delete review");
 
-    Review existing = reviewService.findByIdOrThrow(id);
+    ReviewResponse existing = reviewService.detail(id);
 
     boolean isOwner = currentUser().getId().equals(existing.getUserId());
 
@@ -122,7 +109,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   public PageResponse<ReviewResponse> findByRatingAndProductId(ReviewFilterRequest request) {
     log.info("(facade) find reviews request: {}", request);
 
-    productService.findByIdOrThrow(request.getProductId());
+    productService.checkProductExist(request.getProductId());
 
     return reviewService.findByRatingAndProductId(request);
   }
@@ -131,7 +118,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   public ReviewResponse detail(Long id) {
     log.info("(facade) detail review id: {}", id);
 
-    Review review = reviewService.findByIdOrThrow(id);
+    ReviewResponse review = reviewService.detail(id);
 
     User user = userService.getAvailableUserAndThrow(review.getUserId());
 
@@ -139,7 +126,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   }
 
   private void syncProductAverageRating(Long productId) {
-    Product product = productService.findByIdOrThrow(productId);
+    productService.checkProductExist(productId);
 
     BigDecimal averageRating = reviewService.findAverageRatingByProductId(productId);
 
@@ -147,14 +134,14 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
       ? averageRating.setScale(1, java.math.RoundingMode.HALF_UP)
       : BigDecimal.ZERO;
 
-    productService.updateAverageRating(product.getId(), finalRating);
+    productService.updateAverageRating(productId, finalRating);
   }
 
   private void syncProductReviewCount(Long productId) {
-    Product product = productService.findByIdOrThrow(productId);
+    productService.checkProductExist(productId);
 
     int quantity = reviewService.countByProductId(productId);
 
-    productService.updateReviewCount(product.getId(), quantity);
+    productService.updateReviewCount(productId, quantity);
   }
 }
