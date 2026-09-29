@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.constants.OpLearnConstants;
 import org.oplearn.project.dto.request.ProductFilterRequest;
+import org.oplearn.project.dto.request.ProductRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductResponse;
 import org.oplearn.project.entity.Product;
+import org.oplearn.project.exception.ProductAlreadyExistedException;
 import org.oplearn.project.exception.ProductNotFoundException;
 import org.oplearn.project.repository.ProductRepository;
 import org.oplearn.project.service.ProductService;
@@ -36,25 +38,52 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   @Transactional
-  public Product create(Product product) {
-    log.info("(create) product: {}", product);
-    return repository.save(product);
+  public ProductResponse create(ProductRequest request) {
+    log.info("(create) product request: {}", request);
+
+    String name = request.getName().trim();
+    if (repository.existsByNameAndIsDeletedFalse(name)) {
+      log.error("(create) product name already exists: {}", name);
+      throw new ProductAlreadyExistedException();
+    }
+
+    Product product = Product.builder()
+        .name(name)
+        .description(request.getDescription())
+        .categoryId(request.getCategoryId())
+        .thumbnailUrl(request.getThumbnailUrl())
+        .minPrice(request.getMinPrice() != null ? request.getMinPrice() : BigDecimal.ZERO)
+        .soldCount(0)
+        .build();
+
+    Product savedProduct = repository.save(product);
+    return ProductResponse.from(savedProduct);
   }
 
   @Override
   @Transactional
-  public Product update(Product product, Long id) {
-    log.info("(update) product id: {}, data: {}", id, product);
+  public ProductResponse update(ProductRequest request, Long id) {
+    log.info("(update) product id: {}, request: {}", id, request);
 
     Product existingProduct = findByIdOrThrow(id);
-    setProductValues(existingProduct, product);
 
-    return repository.save(existingProduct);
+    if (request.getName() != null) {
+      String name = request.getName().trim();
+      if (repository.existsByNameAndIdNotAndIsDeletedFalse(name, id)) {
+        log.error("(update) product name already exists: {}", name);
+        throw new ProductAlreadyExistedException();
+      }
+    }
+
+    setProductValues(existingProduct, request);
+
+    Product updatedProduct = repository.save(existingProduct);
+    return ProductResponse.from(updatedProduct);
   }
 
-  private void setProductValues(Product target, Product source) {
+  private void setProductValues(Product target, ProductRequest source) {
     if (source.getName() != null) {
-      target.setName(source.getName());
+      target.setName(source.getName().trim());
     }
     if (source.getDescription() != null) {
       target.setDescription(source.getDescription());
@@ -68,9 +97,12 @@ public class ProductServiceImpl implements ProductService {
     if (source.getMinPrice() != null) {
       target.setMinPrice(source.getMinPrice());
     }
-    if (source.getSoldCount() != null) {
-      target.setSoldCount(source.getSoldCount());
-    }
+  }
+
+  @Override
+  public ProductResponse detail(Long id) {
+    log.info("(detail) product id: {}", id);
+    return ProductResponse.from(findByIdOrThrow(id));
   }
 
   @Override
@@ -180,7 +212,15 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Product findByIdOrThrow(Long id) {
+  public void checkProductExist(Long id) {
+    log.debug("(checkProductExist) id: {}", id);
+    if (!repository.existsByIdAndIsDeletedFalse(id)) {
+      log.error("(checkProductExist) product not found: {}", id);
+      throw new ProductNotFoundException();
+    }
+  }
+
+  private Product findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(ProductNotFoundException::new);
   }

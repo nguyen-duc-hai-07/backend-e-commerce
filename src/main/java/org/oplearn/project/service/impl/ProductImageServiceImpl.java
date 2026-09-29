@@ -81,8 +81,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         .toList();
   }
 
-  @Override
-  public ProductImage findByIdOrThrow(Long id) {
+  private ProductImage findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(ProductImageNotFoundException::new);
   }
