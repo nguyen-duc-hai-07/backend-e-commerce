@@ -2,6 +2,7 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.ProductImageRequest;
 import org.oplearn.project.dto.response.ProductImageResponse;
 import org.oplearn.project.entity.ProductImage;
 import org.oplearn.project.exception.ProductImageNotFoundException;
@@ -21,28 +22,41 @@ public class ProductImageServiceImpl implements ProductImageService {
 
   @Override
   @Transactional
-  public ProductImage create(ProductImage productImage) {
-    log.info("(create) productImage: {}", productImage);
-    return repository.save(productImage);
+  public ProductImageResponse create(ProductImageRequest request) {
+    log.info("(create) productImage request: {}", request);
+
+    ProductImage image = ProductImage.builder()
+        .productId(request.getProductId())
+        .imageUrl(request.getImageUrl().trim())
+        .displayOrder(request.getDisplayOrder() != null ? request.getDisplayOrder() : 0)
+        .build();
+
+    ProductImage saved = repository.save(image);
+    return ProductImageResponse.from(saved);
   }
 
   @Override
   @Transactional
-  public ProductImage update(ProductImage productImage, Long id) {
-    log.info("(update) id: {}, productImage: {}", id, productImage);
+  public ProductImageResponse update(ProductImageRequest request, Long id) {
+    log.info("(update) id: {}, request: {}", id, request);
     ProductImage existing = findByIdOrThrow(id);
 
-    if (productImage.getProductId() != null) {
-      existing.setProductId(productImage.getProductId());
-    }
-    if (productImage.getImageUrl() != null) {
-      existing.setImageUrl(productImage.getImageUrl());
-    }
-    if (productImage.getDisplayOrder() != null) {
-      existing.setDisplayOrder(productImage.getDisplayOrder());
-    }
+    setProductImageValues(existing, request);
 
-    return repository.save(existing);
+    ProductImage updated = repository.save(existing);
+    return ProductImageResponse.from(updated);
+  }
+
+  private void setProductImageValues(ProductImage target, ProductImageRequest source) {
+    if (source.getProductId() != null) {
+      target.setProductId(source.getProductId());
+    }
+    if (source.getImageUrl() != null) {
+      target.setImageUrl(source.getImageUrl().trim());
+    }
+    if (source.getDisplayOrder() != null) {
+      target.setDisplayOrder(source.getDisplayOrder());
+    }
   }
 
   @Override
@@ -67,8 +81,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         .toList();
   }
 
-  @Override
-  public ProductImage findByIdOrThrow(Long id) {
+  private ProductImage findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(ProductImageNotFoundException::new);
   }
