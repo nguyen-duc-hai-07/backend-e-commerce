@@ -112,8 +112,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         .toList();
   }
 
-  @Override
-  public ProductVariant findByIdOrThrow(Long id) {
+  private ProductVariant findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(ProductVariantNotFoundException::new);
   }
