@@ -7,6 +7,7 @@
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
   <include file="db/changelog/002-create-table-users.xml"/>
+  <include file="db/changelog/002_1-init-vietnamese-provinces.xml"/>
   <include file="db/changelog/003-create-table-addresses.xml"/>
   <include file="db/changelog/004-create-table-categories.xml"/>
   <include file="db/changelog/005-create-table-products.xml"/>
@@ -29,5 +30,6 @@
   <include file="db/changelog/022-create-table-conversations.xml"/>
   <include file="db/changelog/023-create-table-messages.xml"/>
   <include file="db/changelog/024-add-product-search-index.xml"/>
+  <include file="db/changelog/025-add-product-min-price-and-sold-count.xml"/>
 
 </databaseChangeLog>

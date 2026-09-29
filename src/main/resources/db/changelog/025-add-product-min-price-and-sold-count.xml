@@ -1,0 +1,27 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="025-add-product-min-price-and-sold-count" author="ecommerce">
+    <addColumn tableName="products">
+      <column name="min_price" type="DECIMAL(15,2)" defaultValueNumeric="0.00">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sold_count" type="INT" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+
+    <createIndex tableName="products" indexName="idx_products_min_price">
+      <column name="min_price"/>
+    </createIndex>
+
+    <createIndex tableName="products" indexName="idx_products_sold_count">
+      <column name="sold_count"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

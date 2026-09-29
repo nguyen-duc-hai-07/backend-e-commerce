@@ -1,8 +1,11 @@
 package org.oplearn.project.service;
 
+import org.oplearn.project.dto.request.ProductFilterRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductResponse;
 import org.oplearn.project.entity.Product;
+
+import java.math.BigDecimal;
 
 public interface ProductService {
 
@@ -14,11 +17,15 @@ public interface ProductService {
 
   void delete(Long id);
 
-  PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String direction);
+  PageResponse<ProductResponse> listByCategoryId(ProductFilterRequest request);
 
-  PageResponse<ProductResponse> search(String keyword, Long categoryId, int page, int size);
+  PageResponse<ProductResponse> search(ProductFilterRequest request);
 
   Product findByIdOrThrow(Long id);
 
   PageResponse<ProductResponse> random();
+
+  void updateMinPrice(Long id, BigDecimal minPrice);
+
+  void increaseSoldCount(Long id, int quantity);
 }
