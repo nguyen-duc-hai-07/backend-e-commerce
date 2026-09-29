@@ -14,6 +14,7 @@ import org.oplearn.project.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -29,6 +30,7 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
   }
 
   @Override
+  @Transactional
   public ReviewReplyResponse create(ReviewReplyRequest request) {
     log.info("(facade) create reply");
 
@@ -48,6 +50,7 @@ public class ReplyFacadeServiceImpl implements ReplyFacadeService {
   }
 
   @Override
+  @Transactional
   public ReviewReplyResponse update(String content, Long id) {
     log.info("(facade) update reply");
 
