@@ -11,6 +11,7 @@ import org.oplearn.project.repository.ProductVariantRepository;
 import org.oplearn.project.service.ProductService;
 import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -22,6 +23,7 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
   private final ProductVariantRepository productVariantRepository;
 
   @Override
+  @Transactional
   public ProductVariantResponse create(ProductVariantRequest request) {
     log.info("(facade) create variant request: {}", request);
 
@@ -45,6 +47,7 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
   }
 
   @Override
+  @Transactional
   public ProductVariantResponse update(ProductVariantRequest request, Long id) {
     log.info("(facade) update variant id: {}, request: {}", id, request);
 
