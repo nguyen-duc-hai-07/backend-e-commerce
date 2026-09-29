@@ -48,27 +48,27 @@ public class AddressServiceImpl implements AddressService {
     return AddressResponse.from(savedAddress);
   }
 
-@Override
-      @Transactional
-      public AddressResponse update(AddressRequest request, Long id) {
-        log.info("update address with id: {}", id);
+  @Override
+  @Transactional
+  public AddressResponse update(AddressRequest request, Long id) {
+    log.info("update address with id: {}", id);
 
-        Address existingAddress = repository.findByIdAndIsDeletedFalse(id)
-          .orElseThrow(AddressNotFoundException::new);
-        setAddressValues(existingAddress, request);
-        repository.save(existingAddress);
+    Address existingAddress = repository.findByIdAndIsDeletedFalse(id)
+      .orElseThrow(AddressNotFoundException::new);
+    setAddressValues(existingAddress, request);
+    repository.save(existingAddress);
 
-        return AddressResponse.from(existingAddress);
-      }
+    return AddressResponse.from(existingAddress);
+  }
 
-      private void setAddressValues(Address target, AddressRequest source) {
-        target.setProvinceCode(source.getProvinceCode());
-        target.setDistrictCode(source.getDistrictCode());
-        target.setWardCode(source.getWardCode());
-        target.setRecipientName(source.getRecipientName());
-        target.setPhoneNumber(source.getPhoneNumber());
-        target.setStreetAddress(source.getStreetAddress());
-      }
+  private void setAddressValues(Address target, AddressRequest source) {
+    target.setProvinceCode(source.getProvinceCode());
+    target.setDistrictCode(source.getDistrictCode());
+    target.setWardCode(source.getWardCode());
+    target.setRecipientName(source.getRecipientName());
+    target.setPhoneNumber(source.getPhoneNumber());
+    target.setStreetAddress(source.getStreetAddress());
+  }
 
   @Override
   public AddressResponse detail(Long id) {
