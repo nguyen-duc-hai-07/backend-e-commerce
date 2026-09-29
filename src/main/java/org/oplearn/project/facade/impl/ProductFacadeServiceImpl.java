@@ -6,7 +6,6 @@ import org.oplearn.project.dto.request.ProductFilterRequest;
 import org.oplearn.project.dto.request.ProductRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductResponse;
-import org.oplearn.project.entity.Product;
 import org.oplearn.project.facade.ProductFacadeService;
 import org.oplearn.project.service.CategoryService;
 import org.oplearn.project.service.ProductService;
@@ -28,17 +27,7 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
 
     categoryService.detail(request.getCategoryId());
 
-    Product product = Product.builder()
-        .name(request.getName().trim())
-        .description(request.getDescription())
-        .categoryId(request.getCategoryId())
-        .thumbnailUrl(request.getThumbnailUrl())
-        .minPrice(request.getMinPrice() != null ? request.getMinPrice() : java.math.BigDecimal.ZERO)
-        .soldCount(0)
-        .build();
-
-    Product savedProduct = productService.create(product);
-    return ProductResponse.from(savedProduct);
+    return productService.create(request);
   }
 
   @Override
@@ -50,16 +39,7 @@ public class ProductFacadeServiceImpl implements ProductFacadeService {
       categoryService.detail(request.getCategoryId());
     }
 
-    Product product = Product.builder()
-        .name(request.getName() != null ? request.getName().trim() : null)
-        .description(request.getDescription())
-        .categoryId(request.getCategoryId())
-        .thumbnailUrl(request.getThumbnailUrl())
-        .minPrice(request.getMinPrice())
-        .build();
-
-    Product updatedProduct = productService.update(product, id);
-    return ProductResponse.from(updatedProduct);
+    return productService.update(request, id);
   }
 
   @Override
