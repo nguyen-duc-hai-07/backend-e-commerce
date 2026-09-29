@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AddressRequest {
+  private Long userId;
 
   @NotBlank(message = "address.recipient_name.not_blank")
   private String recipientName;
