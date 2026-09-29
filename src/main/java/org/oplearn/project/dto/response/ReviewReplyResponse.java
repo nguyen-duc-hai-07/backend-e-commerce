@@ -49,4 +49,15 @@ public class ReviewReplyResponse {
     }
     return response;
   }
+
+  public static ReviewReplyResponse of(ReviewReplyResponse response, User user) {
+    if (response == null) {
+      return null;
+    }
+    if (user != null) {
+      response.setUserFullName(user.getFullName());
+      response.setUserAvatarUrl(user.getAvatarUrl());
+    }
+    return response;
+  }
 }

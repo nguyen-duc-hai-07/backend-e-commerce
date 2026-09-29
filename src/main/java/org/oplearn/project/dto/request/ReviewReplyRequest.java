@@ -14,6 +14,8 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReviewReplyRequest {
 
+  private Long userId;
+
   @NotNull(message = "review_reply.review_id.not_null")
   private Long reviewId;
 
