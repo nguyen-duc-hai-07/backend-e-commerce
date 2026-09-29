@@ -2,9 +2,11 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.ProductVariantRequest;
 import org.oplearn.project.dto.response.ProductVariantResponse;
 import org.oplearn.project.entity.ProductVariant;
 import org.oplearn.project.exception.ProductVariantNotFoundException;
+import org.oplearn.project.exception.SkuAlreadyExistedException;
 import org.oplearn.project.repository.ProductVariantRepository;
 import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
@@ -21,34 +23,63 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
   @Override
   @Transactional
-  public ProductVariant create(ProductVariant productVariant) {
-    log.info("(create) productVariant: {}", productVariant);
-    return repository.save(productVariant);
+  public ProductVariantResponse create(ProductVariantRequest request) {
+    log.info("(create) productVariant request: {}", request);
+
+    String sku = request.getSku().trim();
+    if (repository.existsBySkuAndIsDeletedFalse(sku)) {
+      log.error("(create) sku already exists: {}", sku);
+      throw new SkuAlreadyExistedException();
+    }
+
+    ProductVariant productVariant = ProductVariant.builder()
+        .productId(request.getProductId())
+        .sku(sku)
+        .attributes(request.getAttributes())
+        .price(request.getPrice())
+        .quantity(request.getQuantity())
+        .build();
+
+    ProductVariant saved = repository.save(productVariant);
+    return ProductVariantResponse.from(saved);
   }
 
   @Override
   @Transactional
-  public ProductVariant update(ProductVariant productVariant, Long id) {
-    log.info("(update) id: {}, productVariant: {}", id, productVariant);
+  public ProductVariantResponse update(ProductVariantRequest request, Long id) {
+    log.info("(update) id: {}, request: {}", id, request);
     ProductVariant existing = findByIdOrThrow(id);
 
-    if (productVariant.getProductId() != null) {
-      existing.setProductId(productVariant.getProductId());
-    }
-    if (productVariant.getSku() != null) {
-      existing.setSku(productVariant.getSku());
-    }
-    if (productVariant.getAttributes() != null) {
-      existing.setAttributes(productVariant.getAttributes());
-    }
-    if (productVariant.getPrice() != null) {
-      existing.setPrice(productVariant.getPrice());
-    }
-    if (productVariant.getQuantity() != null) {
-      existing.setQuantity(productVariant.getQuantity());
+    if (request.getSku() != null) {
+      String sku = request.getSku().trim();
+      if (repository.existsBySkuAndIdNotAndIsDeletedFalse(sku, id)) {
+        log.error("(update) sku already exists: {}", sku);
+        throw new SkuAlreadyExistedException();
+      }
     }
 
-    return repository.save(existing);
+    setProductVariantValues(existing, request);
+
+    ProductVariant updated = repository.save(existing);
+    return ProductVariantResponse.from(updated);
+  }
+
+  private void setProductVariantValues(ProductVariant target, ProductVariantRequest source) {
+    if (source.getProductId() != null) {
+      target.setProductId(source.getProductId());
+    }
+    if (source.getSku() != null) {
+      target.setSku(source.getSku().trim());
+    }
+    if (source.getAttributes() != null) {
+      target.setAttributes(source.getAttributes());
+    }
+    if (source.getPrice() != null) {
+      target.setPrice(source.getPrice());
+    }
+    if (source.getQuantity() != null) {
+      target.setQuantity(source.getQuantity());
+    }
   }
 
   @Override
@@ -81,8 +112,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         .toList();
   }
 
-  @Override
-  public ProductVariant findByIdOrThrow(Long id) {
+  private ProductVariant findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(ProductVariantNotFoundException::new);
   }
