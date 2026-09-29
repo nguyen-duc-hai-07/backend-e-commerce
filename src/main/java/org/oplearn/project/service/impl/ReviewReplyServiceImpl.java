@@ -2,6 +2,8 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.ReviewReplyRequest;
+import org.oplearn.project.dto.response.ReviewReplyResponse;
 import org.oplearn.project.entity.ReviewReply;
 import org.oplearn.project.exception.ReviewReplyAlreadyExistedException;
 import org.oplearn.project.exception.ReviewReplyNotFoundException;
@@ -18,34 +20,42 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
 
   @Override
   @Transactional
-  public ReviewReply create(ReviewReply reviewReply) {
+  public ReviewReplyResponse create(ReviewReplyRequest request) {
     log.info("(create) reviewReply");
 
-    if(repository.existsByReviewIdAndIsDeletedFalse(reviewReply.getReviewId())) {
+    if (repository.existsByReviewIdAndIsDeletedFalse(request.getReviewId())) {
       throw new ReviewReplyAlreadyExistedException();
     }
 
-    return repository.save(reviewReply);
+    ReviewReply reviewReply = ReviewReply.builder()
+      .reviewId(request.getReviewId())
+      .userId(request.getUserId())
+      .content(request.getContent() != null ? request.getContent().trim() : null)
+      .build();
+
+    ReviewReply saved = repository.save(reviewReply);
+    return ReviewReplyResponse.from(saved);
   }
 
   @Override
   @Transactional
-  public ReviewReply update(String content, Long id) {
+  public ReviewReplyResponse update(String content, Long id) {
     log.info("(update) reviewReply");
 
     ReviewReply existing = findByIdOrThrow(id);
 
-    if(content != null) {
-      existing.setContent(content);
+    if (content != null) {
+      existing.setContent(content.trim());
     }
 
-    return repository.save(existing);
+    ReviewReply updated = repository.save(existing);
+    return ReviewReplyResponse.from(updated);
   }
 
   @Override
-  public ReviewReply findByIdOrThrow(Long id) {
-    return repository.findByIdAndIsDeletedFalse(id)
-      .orElseThrow(ReviewReplyNotFoundException::new);
+  public ReviewReplyResponse detail(Long id) {
+    log.info("(detail) id: {}", id);
+    return ReviewReplyResponse.from(findByIdOrThrow(id));
   }
 
   @Override
@@ -59,7 +69,12 @@ public class ReviewReplyServiceImpl implements ReviewReplyService {
   }
 
   @Override
-  public ReviewReply findByReviewId(Long reviewId) {
-    return repository.findByReviewIdAndIsDeletedFalse(reviewId);
+  public ReviewReplyResponse findByReviewId(Long reviewId) {
+    return ReviewReplyResponse.from(repository.findByReviewIdAndIsDeletedFalse(reviewId));
+  }
+
+  private ReviewReply findByIdOrThrow(Long id) {
+    return repository.findByIdAndIsDeletedFalse(id)
+      .orElseThrow(ReviewReplyNotFoundException::new);
   }
 }

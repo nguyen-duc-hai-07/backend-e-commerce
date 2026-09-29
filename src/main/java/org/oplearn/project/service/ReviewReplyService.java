@@ -1,15 +1,16 @@
 package org.oplearn.project.service;
 
-import org.oplearn.project.entity.ReviewReply;
+import org.oplearn.project.dto.request.ReviewReplyRequest;
+import org.oplearn.project.dto.response.ReviewReplyResponse;
 
 public interface ReviewReplyService {
-  ReviewReply create(ReviewReply reviewReply);
+  ReviewReplyResponse create(ReviewReplyRequest request);
 
-  ReviewReply update(String content, Long id);
+  ReviewReplyResponse update(String content, Long id);
 
-  ReviewReply findByIdOrThrow(Long id);
+  ReviewReplyResponse detail(Long id);
 
   void delete(Long id);
 
-  ReviewReply findByReviewId(Long reviewId);
+  ReviewReplyResponse findByReviewId(Long reviewId);
 }
