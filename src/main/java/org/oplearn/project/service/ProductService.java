@@ -1,6 +1,7 @@
 package org.oplearn.project.service;
 
 import org.oplearn.project.dto.request.ProductFilterRequest;
+import org.oplearn.project.dto.request.ProductRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductResponse;
 import org.oplearn.project.entity.Product;
@@ -9,9 +10,9 @@ import java.math.BigDecimal;
 
 public interface ProductService {
 
-  Product create(Product product);
+  ProductResponse create(ProductRequest request);
 
-  Product update(Product product, Long id);
+  ProductResponse update(ProductRequest request, Long id);
 
   ProductResponse detail(Long id);
 
