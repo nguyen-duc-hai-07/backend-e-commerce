@@ -10,4 +10,8 @@ public interface AdministrativeUnitService {
   List<ProvinceResponse> listProvinces();
   List<DistrictResponse> listDistricts(String provinceCode);
   List<WardResponse> listWards(String districtCode);
+
+  void checkProvinceExist(String provinceCode);
+  void checkDistrictExist(String districtCode);
+  void checkWardExist(String wardCode);
 }

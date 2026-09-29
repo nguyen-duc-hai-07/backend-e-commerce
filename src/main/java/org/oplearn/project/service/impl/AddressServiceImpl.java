@@ -2,6 +2,7 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.AddressRequest;
 import org.oplearn.project.dto.response.AddressResponse;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.entity.Address;
@@ -22,36 +23,51 @@ public class AddressServiceImpl implements AddressService {
 
   @Override
   @Transactional
-  public Address create(Address address) {
+  public AddressResponse create(AddressRequest request) {
     log.info("create address");
 
-    int addressCount = repository.countByUserIdAndIsDeletedFalse(address.getUserId());
+    int addressCount = repository.countByUserIdAndIsDeletedFalse(request.getUserId());
     if (addressCount >= MAX_ADDRESSES_PER_USER) {
-      log.error("user {} has reached max address", address.getUserId());
+      log.error("user {} has reached max address", request.getUserId());
       throw new AddressLimitExceededException();
     }
 
-    return repository.save(address);
+    Address address = Address.builder()
+      .userId(request.getUserId())
+      .recipientName(request.getRecipientName())
+      .phoneNumber(request.getPhoneNumber())
+      .provinceCode(request.getProvinceCode())
+      .districtCode(request.getDistrictCode())
+      .wardCode(request.getWardCode())
+      .streetAddress(request.getStreetAddress())
+      .isDefault(Boolean.TRUE.equals(request.getIsDefault()))
+      .build();
+
+    Address savedAddress = repository.save(address);
+
+    return AddressResponse.from(savedAddress);
   }
 
   @Override
   @Transactional
-  public Address update(Address address, Long id) {
+  public AddressResponse update(AddressRequest request, Long id) {
     log.info("update address with id: {}", id);
 
     Address existingAddress = repository.findByIdAndIsDeletedFalse(id)
       .orElseThrow(AddressNotFoundException::new);
-    if (existingAddress != null) {
-      existingAddress.setUserId(address.getUserId());
-    }
-    existingAddress.setProvinceCode(address.getProvinceCode());
-    existingAddress.setDistrictCode(address.getDistrictCode());
-    existingAddress.setWardCode(address.getWardCode());
-    existingAddress.setRecipientName(address.getRecipientName());
-    existingAddress.setPhoneNumber(address.getPhoneNumber());
-    existingAddress.setStreetAddress(address.getStreetAddress());
+    setAddressValues(existingAddress, request);
+    repository.save(existingAddress);
 
-    return repository.save(existingAddress);
+    return AddressResponse.from(existingAddress);
+  }
+
+  private void setAddressValues(Address target, AddressRequest source) {
+    target.setProvinceCode(source.getProvinceCode());
+    target.setDistrictCode(source.getDistrictCode());
+    target.setWardCode(source.getWardCode());
+    target.setRecipientName(source.getRecipientName());
+    target.setPhoneNumber(source.getPhoneNumber());
+    target.setStreetAddress(source.getStreetAddress());
   }
 
   @Override
