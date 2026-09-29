@@ -23,7 +23,7 @@ public class ProductImageFacadeServiceImpl implements ProductImageFacadeService 
   public ProductImageResponse create(ProductImageRequest request) {
     log.info("(facade) create productImage request: {}", request);
 
-    productService.findByIdOrThrow(request.getProductId());
+    productService.checkProductExist(request.getProductId());
 
     return productImageService.create(request);
   }
@@ -34,7 +34,7 @@ public class ProductImageFacadeServiceImpl implements ProductImageFacadeService 
     log.info("(facade) update productImage id: {}, request: {}", id, request);
 
     if (request.getProductId() != null) {
-      productService.findByIdOrThrow(request.getProductId());
+      productService.checkProductExist(request.getProductId());
     }
 
     return productImageService.update(request, id);
