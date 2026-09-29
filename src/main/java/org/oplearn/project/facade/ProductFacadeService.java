@@ -1,5 +1,6 @@
 package org.oplearn.project.facade;
 
+import org.oplearn.project.dto.request.ProductFilterRequest;
 import org.oplearn.project.dto.request.ProductRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ProductDetailResponse;
@@ -11,9 +12,9 @@ public interface ProductFacadeService {
 
   ProductResponse update(ProductRequest request, Long id);
 
-  PageResponse<ProductResponse> listByCategoryId(Long categoryId, int page, int size, String sortBy, String direction);
-
-  PageResponse<ProductResponse> search(String keyword, Long categoryId, int page, int size);
+  PageResponse<ProductResponse> listByCategoryId(ProductFilterRequest request);
 
   ProductDetailResponse detail(Long id);
+
+  PageResponse<ProductResponse> search(ProductFilterRequest request);
 }

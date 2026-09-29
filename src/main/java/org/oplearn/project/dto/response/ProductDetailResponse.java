@@ -8,8 +8,7 @@ import org.oplearn.project.entity.Product;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

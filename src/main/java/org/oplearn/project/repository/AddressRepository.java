@@ -6,28 +6,28 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
+
   List<Address> findByUserIdAndIsDeletedFalse(Long userId);
 
   Optional<Address> findByIdAndIsDeletedFalse(Long id);
 
   int countByUserIdAndIsDeletedFalse(Long userId);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE Address a SET a.isDeleted = true WHERE a.id = :id AND a.isDeleted = false")
   void softDeleteById(@Param("id") Long id);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE Address a SET a.isDefault = true WHERE a.id = :id AND a.isDeleted = false")
   void setDefaultAsTrue(@Param("id") Long id);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE Address a SET a.isDefault = false WHERE a.id <> :id AND a.isDeleted = false")
   void setOtherDefaultAsFalse(@Param("id") Long id);
 

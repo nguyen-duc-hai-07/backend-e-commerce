@@ -3,6 +3,7 @@ package org.oplearn.project.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.CategoryFilterRequest;
 import org.oplearn.project.dto.request.CategoryRequest;
 import org.oplearn.project.dto.response.CategoryResponse;
 import org.oplearn.project.dto.response.PageResponse;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.*;
-import static org.oplearn.project.constants.OpLearnConstants.VariableConstant.*;
 
 @RestController
 @Slf4j
@@ -57,15 +57,11 @@ public class CategoryController {
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.findBySlug(slug));
   }
 
-  @GetMapping("/list")
-  public ResponseGeneral<PageResponse<CategoryResponse>> list(
-    @RequestParam(value = PARAM_KEYWORD, required = false) String keyword,
-    @RequestParam(value = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page,
-    @RequestParam(value = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size,
-    @RequestParam(value = PARAM_ALL, defaultValue = IS_ALL_DEFAULT ) boolean isAll
+  @PostMapping("/filter")
+  public ResponseGeneral<PageResponse<CategoryResponse>> filter(
+      @Valid @RequestBody(required = false) CategoryFilterRequest request
   ) {
-    log.info("(list) keyword: {}, page: {}, size: {}, isAll: {}", keyword, page, size, isAll);
-    size = Math.min(size, MAX_PAGE_SIZE);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.list(keyword, size, page, isAll));
+    log.info("(filter) request: {}", request);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.filter(request));
   }
 }
