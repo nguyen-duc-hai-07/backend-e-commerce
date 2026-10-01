@@ -18,7 +18,15 @@ public class OpLearnConstants {
     public static final String PARAM_SIZE = "size";
     public static final String PARAM_PAGE = "page";
     public static final String PARAM_CURSOR = "cursor";
+    public static final String PARAM_CATEGORY_ID = "category_id";
     public static final String PARAM_ALL = "all";
+    public static final String PARAM_DIRECTION = "direction";
+    public static final String DIRECTION_DESC = "DESC";
+    public static final String DIRECTION_ASC = "ASC";
+    public static final String PARAM_SORT_BY = "sort_by";
+    public static final String SORT_BY_ID = "id";
+    public static final String SORT_BY_MIN_PRICE = "min_price";
+    public static final String SORT_BY_SOLD_COUNT = "sold_count";
     public static final String PERCENT = "%";
     public static final String MESSAGE_SOURCE = "classpath:i18n/messages";
     public static final String NOT_FOUND_MESSAGE = "Not found";
@@ -84,6 +92,8 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_GET_PUBLIC = {
+      "/api/v1/categories/**",
+      "/api/v1/products/**",
       "/api/v1/locations/**"
     };
 
@@ -102,18 +112,21 @@ public class OpLearnConstants {
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
       "/api/v1/users/**",
-      "/api/v1/categories/**"
+      "/api/v1/categories/**",
+      "/api/v1/products/**"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {
       "/api/v1/users/**",
-      "/api/v1/categories/**"
+      "/api/v1/categories/**",
+      "/api/v1/products/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
       "/api/v1/users/**",
       "/api/v1/files/**",
-      "/api/v1/categories/**"
+      "/api/v1/categories/**",
+      "/api/v1/products/**"
     };
 
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};
