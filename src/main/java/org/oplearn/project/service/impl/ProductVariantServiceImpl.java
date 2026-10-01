@@ -12,6 +12,7 @@ import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -115,5 +116,11 @@ public class ProductVariantServiceImpl implements ProductVariantService {
   private ProductVariant findByIdOrThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(ProductVariantNotFoundException::new);
+  }
+
+  @Override
+  public BigDecimal findMinPriceByProductId(Long productId) {
+    return repository.findMinPriceByProductId(productId)
+      .orElse(BigDecimal.ZERO);
   }
 }

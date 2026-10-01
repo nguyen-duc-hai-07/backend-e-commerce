@@ -10,6 +10,8 @@ import org.oplearn.project.service.ProductVariantService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -38,5 +40,27 @@ public class ProductVariantFacadeServiceImpl implements ProductVariantFacadeServ
     }
 
     return productVariantService.update(request, id);
+  }
+
+  @Override
+  @Transactional
+  public void delete(Long id) {
+    log.info("(facade) delete variant id: {}", id);
+
+    ProductVariantResponse variant = productVariantService.detail(id);
+
+    productVariantService.delete(id);
+
+    syncProductMinPrice(variant.getProductId());
+  }
+
+  private void syncProductMinPrice(Long productId) {
+    log.info("(facade) sync product min price");
+
+    productService.checkProductExist(productId);
+
+    BigDecimal minPrice = productVariantService.findMinPriceByProductId(productId);
+
+    productService.updateMinPrice(productId, minPrice);
   }
 }

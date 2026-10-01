@@ -50,7 +50,7 @@ public class ProductVariantController {
   @DeleteMapping("/{id}")
   public ResponseGeneral<Void> delete(@PathVariable("id") Long id) {
     log.info("(delete) id: {}", id);
-    service.delete(id);
+    facade.delete(id);
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE);
   }
 
