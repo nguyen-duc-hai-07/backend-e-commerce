@@ -238,4 +238,18 @@ public class ProductServiceImpl implements ProductService {
     log.info("(increaseSoldCount) id: {}, quantity: {}", id, quantity);
     repository.increaseSoldCount(id, quantity);
   }
+
+  @Override
+  @Transactional
+  public void updateAverageRating(Long id, BigDecimal averageRating) {
+    log.info("(updateAverageRating) id: {}, averageRating: {}", id, averageRating);
+    repository.updateAverageRating(id, averageRating);
+  }
+
+  @Override
+  @Transactional
+  public void updateReviewCount(Long id, int quantity) {
+    log.info("(updateReviewCount) id: {}, quantity: {}", id, quantity);
+    repository.updateReviewCount(id, quantity);
+  }
 }

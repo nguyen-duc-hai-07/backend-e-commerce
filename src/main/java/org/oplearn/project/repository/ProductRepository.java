@@ -105,10 +105,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   List<Product> findByIds(@Param("ids") List<Long> ids);
 
   @Modifying
-  @Query("UPDATE Product p SET p.minPrice = :minPrice WHERE p.id = :id")
+  @Query("UPDATE Product p SET p.minPrice = :minPrice WHERE p.id = :id AND p.isDeleted = false")
   void updateMinPrice(@Param("id") Long id, @Param("minPrice") BigDecimal minPrice);
 
   @Modifying
-  @Query("UPDATE Product p SET p.soldCount = p.soldCount + :quantity WHERE p.id = :id")
+  @Query("UPDATE Product p SET p.soldCount = p.soldCount + :quantity WHERE p.id = :id AND p.isDeleted = false")
   void increaseSoldCount(@Param("id") Long id, @Param("quantity") int quantity);
+
+  @Modifying
+  @Query("UPDATE Product p SET p.averageRating = :averageRating WHERE p.id = :id AND p.isDeleted = false")
+  void updateAverageRating(@Param("id") Long id, @Param("averageRating") BigDecimal averageRating);
+
+  @Modifying
+  @Query("UPDATE Product p SET p.reviewCount = :reviewCount WHERE p.id = :id AND p.isDeleted = false")
+  void updateReviewCount(@Param("id") Long id, @Param("reviewCount") int reviewCount);
 }

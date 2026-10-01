@@ -27,4 +27,8 @@ public interface ProductService {
   void updateMinPrice(Long id, BigDecimal minPrice);
 
   void increaseSoldCount(Long id, int quantity);
+
+  void updateAverageRating(Long id, BigDecimal averageRating);
+
+  void updateReviewCount(Long id, int quantity);
 }

@@ -31,5 +31,6 @@
   <include file="db/changelog/023-create-table-messages.xml"/>
   <include file="db/changelog/024-add-product-search-index.xml"/>
   <include file="db/changelog/025-add-product-min-price-and-sold-count.xml"/>
+  <include file="db/changelog/026-add-partial-indexes-for-reviews.xml"/>
 
 </databaseChangeLog>
