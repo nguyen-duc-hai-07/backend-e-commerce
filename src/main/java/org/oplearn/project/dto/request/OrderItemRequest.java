@@ -10,20 +10,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CartItemRequest {
+public class OrderItemRequest {
 
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private Long userId;
-
-  @NotNull(message = "cart_item.variant_id.not_null")
+  @NotNull(message = "order_item.variant_id.not_null")
   private Long variantId;
 
-  @NotNull(message = "cart_item.quantity.not_null")
-  @Min(value = 1, message = "cart_item.quantity.min")
+  @NotNull(message = "order_item.quantity.not_null")
+  @Min(value = 1, message = "order_item.quantity.min")
   private Integer quantity;
+
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private BigDecimal unitPrice;
 }

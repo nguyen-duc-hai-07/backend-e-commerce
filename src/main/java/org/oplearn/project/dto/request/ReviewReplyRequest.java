@@ -1,5 +1,6 @@
 package org.oplearn.project.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReviewReplyRequest {
 
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long userId;
 
   @NotNull(message = "review_reply.review_id.not_null")
