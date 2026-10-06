@@ -40,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
       .districtCode(request.getDistrictCode())
       .wardCode(request.getWardCode())
       .streetAddress(request.getStreetAddress())
-      .isDefault(Boolean.TRUE.equals(request.getIsDefault()))
+      .isDefault(addressCount == 0)
       .build();
 
     Address savedAddress = repository.save(address);
@@ -102,6 +102,15 @@ public class AddressServiceImpl implements AddressService {
       repository.findByUserIdAndIsDeletedFalse(userId).stream()
         .map(AddressResponse::from).toList(),
       repository.countByUserIdAndIsDeletedFalse(userId)
+    );
+  }
+
+  @Override
+  public AddressResponse getDefaultAddress(Long userId) {
+    log.info("(getDefaultAddress) userId: {}", userId);
+    return AddressResponse.from(
+      repository.findFirstByUserIdAndIsDefaultTrueAndIsDeletedFalse(userId)
+        .orElseThrow(AddressNotFoundException::new)
     );
   }
 }

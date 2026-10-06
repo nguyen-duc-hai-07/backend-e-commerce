@@ -16,4 +16,6 @@ public interface AddressService {
   void setDefault(Long id);
 
   PageResponse<AddressResponse> list(Long userId);
+
+  AddressResponse getDefaultAddress(Long userId);
 }

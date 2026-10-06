@@ -39,4 +39,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
        AND a.userId = :userId
        """)
   boolean hasDefaultAddress(@Param("number") int number , @Param("userId") Long userId);
+
+  Optional<Address> findFirstByUserIdAndIsDefaultTrueAndIsDeletedFalse(Long userId);
 }
