@@ -21,6 +21,8 @@ public class ProductVariantResponse {
   private Map<String, String> attributes;
   private BigDecimal price;
   private Integer quantity;
+  private Integer weight;
+  private String imageUrl;
 
   public static ProductVariantResponse from(ProductVariant variant) {
     if (variant == null) {
@@ -33,6 +35,8 @@ public class ProductVariantResponse {
         .attributes(variant.getAttributes())
         .price(variant.getPrice())
         .quantity(variant.getQuantity())
+        .weight(variant.getWeight())
+        .imageUrl(variant.getImageUrl())
         .build();
   }
 }

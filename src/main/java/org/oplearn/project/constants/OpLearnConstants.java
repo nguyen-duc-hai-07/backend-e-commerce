@@ -169,12 +169,4 @@ public class OpLearnConstants {
       CACHE_USERS
     };
   }
-
-  public static class KafkaConstant {
-    private KafkaConstant() {
-    }
-
-    public static final String TOPIC_AUTH_REGISTRATION_OTP = "auth.registration.otp";
-    public static final String TOPIC_AUTH_FORGOT_PASSWORD_OTP = "auth.forgot-password.otp";
-  }
 }
