@@ -1,14 +1,14 @@
 package org.oplearn.project.facade;
 
+import org.oplearn.project.dto.request.OrderCreateRequest;
 import org.oplearn.project.dto.request.OrderFilterRequest;
 import org.oplearn.project.dto.request.OrderRequest;
 import org.oplearn.project.dto.response.OrderPreviewResponse;
 import org.oplearn.project.dto.response.OrderResponse;
 import org.oplearn.project.dto.response.PageResponse;
-import org.oplearn.project.enums.OrderStatus;
 
 public interface OrderFacadeService {
-  OrderResponse create(OrderRequest request);
+  OrderResponse create(OrderCreateRequest request);
 
   OrderPreviewResponse preView(OrderRequest request);
 
@@ -16,5 +16,11 @@ public interface OrderFacadeService {
 
   PageResponse<OrderResponse> findByUserIdAndStatus(OrderFilterRequest request);
 
-  void updateStatus(Long id, OrderStatus status);
+  void complete(Long id);
+
+  void cancel(Long id);
+
+  void autoCompleteDeliveredOrders();
+
+  void autoCancelExpiredPaymentOrders();
 }
