@@ -2,8 +2,8 @@ package org.oplearn.project.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.OrderCreateRequest;
 import org.oplearn.project.dto.request.OrderFilterRequest;
-import org.oplearn.project.dto.request.OrderRequest;
 import org.oplearn.project.dto.response.OrderItemResponse;
 import org.oplearn.project.dto.response.OrderResponse;
 import org.oplearn.project.dto.response.PageResponse;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -32,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
-  public OrderResponse create(OrderRequest request) {
+  public OrderResponse create(OrderCreateRequest request) {
     log.info("(create) order request: {}", request);
 
     Order order = Order.builder()
@@ -43,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
       .shippingFee(request.getShippingFee())
       .discountAmount(request.getDiscountAmount())
       .totalAmount(request.getTotalAmount())
+      .status(request.getStatus() != null ? request.getStatus() : OrderStatus.PENDING_PAYMENT)
       .build();
 
     Order savedOrder = repository.save(order);
@@ -121,5 +123,19 @@ public class OrderServiceImpl implements OrderService {
 
   public boolean hasUserPurchasedProductAndCompleted(Long userId, Long productId) {
     return repository.hasUserPurchasedProductAndCompleted(userId, productId);
+  }
+
+  @Override
+  public List<OrderResponse> findByStatusAndUpdatedAtBefore(OrderStatus status, Instant cutoffTime) {
+    return repository.findByStatusAndUpdatedAtBefore(status, cutoffTime).stream()
+      .map(OrderResponse::from)
+      .toList();
+  }
+
+  @Override
+  public List<OrderResponse> findExpiredPendingOrders(OrderStatus status, Instant cutoffTime) {
+    return repository.findExpiredPendingOrders(status , cutoffTime).stream()
+      .map(OrderResponse::from)
+      .toList();
   }
 }
