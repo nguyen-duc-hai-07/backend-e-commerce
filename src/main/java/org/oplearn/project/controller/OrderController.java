@@ -3,6 +3,7 @@ package org.oplearn.project.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.dto.request.OrderCreateRequest;
 import org.oplearn.project.dto.request.OrderFilterRequest;
 import org.oplearn.project.dto.request.OrderRequest;
 import org.oplearn.project.dto.response.OrderPreviewResponse;
@@ -33,7 +34,7 @@ public class OrderController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseGeneral<OrderResponse> create(@Valid @RequestBody OrderRequest request) {
+  public ResponseGeneral<OrderResponse> create(@Valid @RequestBody OrderCreateRequest request) {
     log.info("(create) request: {}", request);
     return ResponseGeneral.ofCreated(CREATED_MESSAGE, facade.create(request));
   }
@@ -52,13 +53,17 @@ public class OrderController {
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findByUserIdAndStatus(request));
   }
 
-  @PatchMapping("/{id}/status")
-  public ResponseGeneral<Void> updateStatus(
-      @PathVariable("id") Long id,
-      @RequestParam("status") OrderStatus status
-  ) {
-    log.info("(updateStatus) id: {}, status: {}", id, status);
-    facade.updateStatus(id, status);
+  @PatchMapping("/{id}/complete")
+  public ResponseGeneral<Void> complete(@PathVariable("id") Long id) {
+    log.info("(complete) id: {}", id);
+    facade.complete(id);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE);
+  }
+
+  @PatchMapping("/{id}/cancel")
+  public ResponseGeneral<Void> cancel(@PathVariable("id") Long id) {
+    log.info("(cancel) id: {}", id);
+    facade.cancel(id);
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE);
   }
 }
