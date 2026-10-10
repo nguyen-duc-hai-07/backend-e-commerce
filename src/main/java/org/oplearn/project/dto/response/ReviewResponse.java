@@ -24,7 +24,31 @@ public class ReviewResponse {
   private String userAvatarUrl;
   private Integer rating;
   private String comment;
+  private Boolean isDeleted;
+  private String createdBy;
   private Instant createdAt;
+  private Instant updatedAt;
+
+  public ReviewResponse(
+      Long id,
+      Long productId,
+      Long userId,
+      String userFullName,
+      String userAvatarUrl,
+      Integer rating,
+      String comment,
+      Instant createdAt
+  ) {
+    this.id = id;
+    this.productId = productId;
+    this.userId = userId;
+    this.userFullName = userFullName;
+    this.userAvatarUrl = userAvatarUrl;
+    this.rating = rating;
+    this.comment = comment;
+    this.createdAt = createdAt;
+  }
+
 
   public static ReviewResponse from(Review review) {
     if (review == null) {
@@ -36,7 +60,10 @@ public class ReviewResponse {
         .userId(review.getUserId())
         .rating(review.getRating())
         .comment(review.getComment())
+        .isDeleted(review.getIsDeleted())
+        .createdBy(review.getCreatedBy())
         .createdAt(review.getCreatedAt())
+        .updatedAt(review.getUpdatedAt())
         .build();
   }
 

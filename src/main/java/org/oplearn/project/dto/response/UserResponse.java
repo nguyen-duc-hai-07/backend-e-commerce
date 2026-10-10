@@ -30,6 +30,8 @@ public class UserResponse {
   private UserRole role;
   private AuthProvider authProvider;
   private UserStatus status;
+  private Boolean isDeleted;
+  private String createdBy;
   private Instant createdAt;
   private Instant updatedAt;
 
@@ -47,6 +49,8 @@ public class UserResponse {
         .role(user.getRole())
         .authProvider(user.getProvider())
         .status(user.getStatus())
+        .isDeleted(user.getIsDeleted())
+        .createdBy(user.getCreatedBy())
         .createdAt(user.getCreatedAt())
         .updatedAt(user.getUpdatedAt())
         .build();

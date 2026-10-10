@@ -34,7 +34,11 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
           pv.price,
           pv.quantity,
           p.name,
-          p.thumbnailUrl
+          COALESCE(pv.imageUrl, p.thumbnailUrl),
+          ci.isDeleted,
+          ci.createdBy,
+          ci.createdAt,
+          ci.updatedAt
     )
     FROM CartItem ci
     JOIN ProductVariant pv ON ci.variantId = pv.id
@@ -55,4 +59,14 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
   boolean existsByUserIdAndVariantIdAndIsDeletedFalse(Long userId, Long variantId);
 
   Optional<CartItem> findByUserIdAndVariantIdAndIsDeletedFalse(Long userId, Long variantId);
+
+  Optional<CartItem> findByUserIdAndVariantId(Long userId, Long variantId);
+
+  @Modifying
+  @Query("UPDATE CartItem ci SET ci.isDeleted = true WHERE ci.userId = :userId AND ci.variantId IN :variantIds AND ci.isDeleted = false")
+  void deleteByUserIdAndVariantIdIn(@Param("userId") Long userId, @Param("variantIds") List<Long> variantIds);
+
+  @Modifying
+  @Query("UPDATE CartItem ci SET ci.isDeleted = true WHERE ci.id IN :ids AND ci.userId = :userId AND ci.isDeleted = false")
+  void deleteAllByIdInAndUserId(@Param("ids") List<Long> ids, @Param("userId") Long userId);
 }

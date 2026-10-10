@@ -1,5 +1,6 @@
 package org.oplearn.project.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AddressRequest {
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long userId;
 
   @NotBlank(message = "address.recipient_name.not_blank")
@@ -33,6 +35,4 @@ public class AddressRequest {
 
   @NotBlank(message = "address.street_address.not_blank")
   private String streetAddress;
-
-  private Boolean isDefault;
 }

@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oplearn.project.entity.Category;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +19,10 @@ public class CategoryResponse {
   private Long id;
   private String name;
   private String slug;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static CategoryResponse from(Category category) {
     if (category == null) {
@@ -26,6 +32,10 @@ public class CategoryResponse {
         .id(category.getId())
         .name(category.getName())
         .slug(category.getSlug())
+        .isDeleted(category.getIsDeleted())
+        .createdBy(category.getCreatedBy())
+        .createdAt(category.getCreatedAt())
+        .updatedAt(category.getUpdatedAt())
         .build();
   }
 }
