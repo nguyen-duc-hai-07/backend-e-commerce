@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.oplearn.project.entity.CartItem;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 @Data
@@ -34,6 +35,10 @@ public class CartItemResponse {
   private String productThumbnailUrl;
   private String variantImageUrl;
   private String thumbnailUrl;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public CartItemResponse(
     Long id,
@@ -65,6 +70,30 @@ public class CartItemResponse {
     }
   }
 
+  public CartItemResponse(
+    Long id,
+    Long userId,
+    Long variantId,
+    Integer quantity,
+    Long productId,
+    String sku,
+    Map<String, String> attributes,
+    BigDecimal price,
+    Integer stockQuantity,
+    String productName,
+    String productThumbnailUrl,
+    Boolean isDeleted,
+    String createdBy,
+    Instant createdAt,
+    Instant updatedAt
+  ) {
+    this(id, userId, variantId, quantity, productId, sku, attributes, price, stockQuantity, productName, productThumbnailUrl);
+    this.isDeleted = isDeleted;
+    this.createdBy = createdBy;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
+
   public static CartItemResponse from(CartItem cartItem) {
     if (cartItem == null) {
       return null;
@@ -74,6 +103,10 @@ public class CartItemResponse {
         .userId(cartItem.getUserId())
         .variantId(cartItem.getVariantId())
         .quantity(cartItem.getQuantity())
+        .isDeleted(cartItem.getIsDeleted())
+        .createdBy(cartItem.getCreatedBy())
+        .createdAt(cartItem.getCreatedAt())
+        .updatedAt(cartItem.getUpdatedAt())
         .build();
   }
 

@@ -6,6 +6,7 @@ import lombok.*;
 import org.oplearn.project.entity.ProductVariant;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 @Data
@@ -23,6 +24,10 @@ public class ProductVariantResponse {
   private Integer quantity;
   private Integer weight;
   private String imageUrl;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static ProductVariantResponse from(ProductVariant variant) {
     if (variant == null) {
@@ -37,6 +42,10 @@ public class ProductVariantResponse {
         .quantity(variant.getQuantity())
         .weight(variant.getWeight())
         .imageUrl(variant.getImageUrl())
+        .isDeleted(variant.getIsDeleted())
+        .createdBy(variant.getCreatedBy())
+        .createdAt(variant.getCreatedAt())
+        .updatedAt(variant.getUpdatedAt())
         .build();
   }
 }

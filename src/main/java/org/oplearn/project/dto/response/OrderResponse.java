@@ -32,8 +32,13 @@ public class OrderResponse {
   private OrderStatus status;
   private String note;
   private Long originalOrderId;
+  private Boolean isDeleted;
+  private String createdBy;
   private Instant createdAt;
+  private Instant updatedAt;
   private List<OrderItemResponse> items;
+  private PaymentMethodResponse paymentMethod;
+  private PaymentQrResponse paymentQr;
 
   public OrderResponse(
       Long id,
@@ -65,6 +70,42 @@ public class OrderResponse {
     this.createdAt = createdAt;
   }
 
+  public OrderResponse(
+      Long id,
+      String orderCode,
+      Long userId,
+      Long addressId,
+      String recipientName,
+      String recipientPhone,
+      BigDecimal shippingFee,
+      BigDecimal discountAmount,
+      BigDecimal totalAmount,
+      OrderStatus status,
+      String note,
+      Long originalOrderId,
+      Boolean isDeleted,
+      String createdBy,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this.id = id;
+    this.orderCode = orderCode;
+    this.userId = userId;
+    this.addressId = addressId;
+    this.recipientName = recipientName;
+    this.recipientPhone = recipientPhone;
+    this.shippingFee = shippingFee;
+    this.discountAmount = discountAmount;
+    this.totalAmount = totalAmount;
+    this.status = status;
+    this.note = note;
+    this.originalOrderId = originalOrderId;
+    this.isDeleted = isDeleted;
+    this.createdBy = createdBy;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
+
   public static OrderResponse from(Order order) {
     if (order == null) {
       return null;
@@ -80,7 +121,10 @@ public class OrderResponse {
         .status(order.getStatus())
         .note(order.getNote())
         .originalOrderId(order.getOriginalOrderId())
+        .isDeleted(order.getIsDeleted())
+        .createdBy(order.getCreatedBy())
         .createdAt(order.getCreatedAt())
+        .updatedAt(order.getUpdatedAt())
         .build();
   }
 

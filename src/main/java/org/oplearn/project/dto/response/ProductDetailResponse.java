@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -26,6 +27,10 @@ public class ProductDetailResponse {
   private Integer reviewCount;
   private BigDecimal minPrice;
   private Integer soldCount;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   private List<ProductImageResponse> images;
   private List<ProductVariantResponse> variants;
@@ -48,6 +53,10 @@ public class ProductDetailResponse {
       .reviewCount(product.getReviewCount())
       .minPrice(product.getMinPrice())
       .soldCount(product.getSoldCount())
+      .isDeleted(product.getIsDeleted())
+      .createdBy(product.getCreatedBy())
+      .createdAt(product.getCreatedAt())
+      .updatedAt(product.getUpdatedAt())
       .images(images != null ? images : List.of())
       .variants(variants != null ? variants : List.of())
       .build();

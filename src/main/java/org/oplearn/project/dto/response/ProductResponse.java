@@ -10,6 +10,7 @@ import org.oplearn.project.entity.Product;
 import org.oplearn.project.repository.ProductRepository;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -26,6 +27,10 @@ public class ProductResponse {
   private Integer reviewCount;
   private BigDecimal minPrice;
   private Integer soldCount;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static ProductResponse from(Product product) {
     if (product == null) {
@@ -41,6 +46,10 @@ public class ProductResponse {
         .reviewCount(product.getReviewCount())
         .minPrice(product.getMinPrice())
         .soldCount(product.getSoldCount())
+        .isDeleted(product.getIsDeleted())
+        .createdBy(product.getCreatedBy())
+        .createdAt(product.getCreatedAt())
+        .updatedAt(product.getUpdatedAt())
         .build();
   }
 
@@ -58,6 +67,10 @@ public class ProductResponse {
         .reviewCount(row.getReviewCount())
         .minPrice(row.getMinPrice())
         .soldCount(row.getSoldCount())
+        .isDeleted(row.getIsDeleted())
+        .createdBy(row.getCreatedBy())
+        .createdAt(row.getCreatedAt())
+        .updatedAt(row.getUpdatedAt())
         .build();
   }
 }
