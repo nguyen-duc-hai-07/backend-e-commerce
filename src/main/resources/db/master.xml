@@ -34,5 +34,6 @@
   <include file="db/changelog/026-add-partial-indexes-for-reviews.xml"/>
   <include file="db/changelog/027-add-weight-to-product-variants.xml"/>
   <include file="db/changelog/028-add-image-url-to-product-variants.xml"/>
+  <include file="db/changelog/030-add-index-orders-created-at.xml"/>
 
 </databaseChangeLog>
