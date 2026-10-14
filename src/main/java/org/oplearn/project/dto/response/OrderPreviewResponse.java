@@ -27,6 +27,8 @@ public class OrderPreviewResponse {
 
   private BigDecimal subtotal;
   private BigDecimal shippingFee;
+  private BigDecimal productDiscountAmount;
+  private BigDecimal shippingDiscountAmount;
   private BigDecimal discountAmount;
   private BigDecimal totalAmount;
 
@@ -54,6 +56,18 @@ public class OrderPreviewResponse {
       BigDecimal subtotal,
       Integer totalWeight
   ) {
+    return of(request, address, items, subtotal, null, null, totalWeight);
+  }
+
+  public static OrderPreviewResponse of(
+      OrderRequest request,
+      AddressResponse address,
+      List<OrderItemResponse> items,
+      BigDecimal subtotal,
+      BigDecimal productDiscountAmount,
+      BigDecimal shippingDiscountAmount,
+      Integer totalWeight
+  ) {
     if (request == null) {
       return null;
     }
@@ -65,6 +79,8 @@ public class OrderPreviewResponse {
         .items(items)
         .subtotal(subtotal)
         .shippingFee(request.getShippingFee())
+        .productDiscountAmount(productDiscountAmount)
+        .shippingDiscountAmount(shippingDiscountAmount)
         .discountAmount(request.getDiscountAmount())
         .totalAmount(request.getTotalAmount())
         .totalWeight(totalWeight)
