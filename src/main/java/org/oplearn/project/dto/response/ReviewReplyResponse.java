@@ -23,7 +23,10 @@ public class ReviewReplyResponse {
   private String userFullName;
   private String userAvatarUrl;
   private String content;
+  private Boolean isDeleted;
+  private String createdBy;
   private Instant createdAt;
+  private Instant updatedAt;
 
   public static ReviewReplyResponse from(ReviewReply reply) {
     if (reply == null) {
@@ -34,7 +37,10 @@ public class ReviewReplyResponse {
         .reviewId(reply.getReviewId())
         .userId(reply.getUserId())
         .content(reply.getContent())
+        .isDeleted(reply.getIsDeleted())
+        .createdBy(reply.getCreatedBy())
         .createdAt(reply.getCreatedAt())
+        .updatedAt(reply.getUpdatedAt())
         .build();
   }
 
