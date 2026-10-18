@@ -325,7 +325,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
 
   private void executeCancel(OrderResponse currentOrder) {
     if (currentOrder.getStatus() != OrderStatus.PENDING_PAYMENT
-      && currentOrder.getStatus() != OrderStatus.CONFIRMED) {
+      && currentOrder.getStatus() != OrderStatus.CONFIRMED
+      && currentOrder.getStatus() != OrderStatus.PAID) {
       log.warn("(cancel) cannot cancel order with status: {}", currentOrder.getStatus());
       throw new InvalidOrderStatusException();
     }
