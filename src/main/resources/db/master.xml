@@ -37,5 +37,6 @@
   <include file="db/changelog/030-add-index-orders-created-at.xml"/>
   <include file="db/changelog/031-add-target-to-vouchers.xml"/>
   <include file="db/changelog/032-drop-max-claim-per-user-from-vouchers.xml"/>
+  <include file="db/changelog/033-create-table-refunds.xml"/>
 
 </databaseChangeLog>
