@@ -97,6 +97,7 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_POST_PUBLIC = {
+      "/api/v1/webhooks/sepay"
     };
 
     public static final String[] HTTP_METHOD_PUT_PUBLIC = {
@@ -106,7 +107,12 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_GET_ADMIN = {
-      "/api/v1/users"
+      "/api/v1/users",
+      "/api/v1/admin/statistics/**",
+      "/api/v1/vouchers/{id:[0-9]+}",
+      "/api/v1/vouchers/code/**",
+      "/api/v1/refunds/admin",
+      "/api/v1/refunds/admin/**"
     };
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
@@ -116,7 +122,9 @@ public class OpLearnConstants {
       "/api/v1/product-variants/**",
       "/api/v1/product-images/**",
       "/api/v1/review-replies/**",
-      "/api/v1/payment-methods/**"
+      "/api/v1/payment-methods/**",
+      "/api/v1/payments",
+      "/api/v1/vouchers"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {
@@ -126,7 +134,9 @@ public class OpLearnConstants {
       "/api/v1/product-variants/**",
       "/api/v1/product-images/**",
       "/api/v1/review-replies/**",
-      "/api/v1/payment-methods/**"
+      "/api/v1/payment-methods/**",
+      "/api/v1/vouchers/**",
+      "/api/v1/refunds/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
@@ -168,13 +178,5 @@ public class OpLearnConstants {
     public static final String[] ALL_CACHE_NAMES = {
       CACHE_USERS
     };
-  }
-
-  public static class KafkaConstant {
-    private KafkaConstant() {
-    }
-
-    public static final String TOPIC_AUTH_REGISTRATION_OTP = "auth.registration.otp";
-    public static final String TOPIC_AUTH_FORGOT_PASSWORD_OTP = "auth.forgot-password.otp";
   }
 }

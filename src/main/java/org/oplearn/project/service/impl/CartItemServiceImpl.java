@@ -32,14 +32,19 @@ public class CartItemServiceImpl implements CartItemService {
   public CartItemResponse create(CartItemRequest request) {
     log.info("(create) cartItem request: {}", request);
 
-    Optional<CartItem> existingCartItem = repository.findByUserIdAndVariantIdAndIsDeletedFalse(
+    Optional<CartItem> existingCartItem = repository.findByUserIdAndVariantId(
       request.getUserId(), request.getVariantId()
     );
 
     CartItem cartItem;
     if (existingCartItem.isPresent()) {
       cartItem = existingCartItem.get();
-      cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+      if(Boolean.TRUE.equals(cartItem.getIsDeleted())) {
+        cartItem.setIsDeleted(false);
+        cartItem.setQuantity(request.getQuantity());
+      } else {
+        cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+      }
     } else {
       Long cartItemCount = repository.countByUserIdAndIsDeletedFalse(request.getUserId());
       if (cartItemCount != null && cartItemCount >= MAX_CART_ITEMS_PER_USER) {
@@ -87,6 +92,16 @@ public class CartItemServiceImpl implements CartItemService {
     log.info("(delete) cartItem id: {}", id);
     findByIdOrThrow(id);
     repository.softDeleteById(id);
+  }
+
+  @Override
+  @Transactional
+  public void deleteByIdsAndUserId(List<Long> ids, Long userId) {
+    log.info("(deleteByIdsAndUserId) ids: {}, userId: {}", ids, userId);
+    if (ids == null || ids.isEmpty() || userId == null) {
+      return;
+    }
+    repository.deleteAllByIdInAndUserId(ids, userId);
   }
 
   @Override
