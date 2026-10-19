@@ -42,6 +42,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final EmailService emailService;
   private final VoucherService voucherService;
   private final UserVoucherService userVoucherService;
+  private final ReturnRqService returnRqService;
 
   private User currentUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -321,6 +322,26 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
     }
 
     executeCancel(currentOrder);
+  }
+
+  @Override
+  public void handleReturnRequest(Long id) {
+    log.info("(facade) handleReturnRequest order id: {}", id);
+
+    User currentUser = currentUser();
+    OrderResponse currentOrder = this.detail(id);
+
+    if(!currentUser.getId().equals(currentOrder.getUserId())) {
+      log.warn("(handleReturnRequest) user not authorized");
+      throw new UserUnauthorizedException();
+    }
+
+    if(currentOrder.getStatus() != OrderStatus.COMPLETED) {
+      log.warn("(handleReturnRequest) order status not completed");
+      throw new InvalidOrderStatusException();
+    }
+
+    orderService.updateStatus(currentOrder.getId() , OrderStatus.RETURN_REQUESTED);
   }
 
   private void executeCancel(OrderResponse currentOrder) {
