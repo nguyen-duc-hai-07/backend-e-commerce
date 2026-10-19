@@ -14,7 +14,8 @@ import org.oplearn.project.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.*;
+import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.CREATED_MESSAGE;
+import static org.oplearn.project.constants.OpLearnConstants.CommonConstants.SUCCESS_MESSAGE;
 
 @RestController
 @Slf4j

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.dto.request.ProductVariantRequest;
 import org.oplearn.project.dto.response.ProductVariantResponse;
 import org.oplearn.project.entity.ProductVariant;
+import org.oplearn.project.exception.ProductOutOfStockException;
 import org.oplearn.project.exception.ProductVariantNotFoundException;
 import org.oplearn.project.exception.SkuAlreadyExistedException;
 import org.oplearn.project.repository.ProductVariantRepository;
@@ -39,6 +40,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         .attributes(request.getAttributes())
         .price(request.getPrice())
         .quantity(request.getQuantity())
+        .weight(request.getWeight() != null ? request.getWeight() : 200)
+        .imageUrl(request.getImageUrl())
         .build();
 
     ProductVariant saved = repository.save(productVariant);
@@ -81,6 +84,12 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     if (source.getQuantity() != null) {
       target.setQuantity(source.getQuantity());
     }
+    if (source.getWeight() != null) {
+      target.setWeight(source.getWeight());
+    }
+    if (source.getImageUrl() != null) {
+      target.setImageUrl(source.getImageUrl());
+    }
   }
 
   @Override
@@ -122,5 +131,20 @@ public class ProductVariantServiceImpl implements ProductVariantService {
   public BigDecimal findMinPriceByProductId(Long productId) {
     return repository.findMinPriceByProductId(productId)
       .orElse(BigDecimal.ZERO);
+  }
+
+  @Override
+  public void increaseQuantity(Long id, int quantity) {
+    log.info("(increaseQuantity) id: {}, quantity: {}", id, quantity);
+    repository.increaseQuantity(id, quantity);
+  }
+
+  @Override
+  public void decreaseQuantity(Long id, int quantity) {
+    log.info("(decreaseQuantity) id: {}, quantity: {}", id, quantity);
+    int updatedRows = repository.decreaseQuantity(id, quantity);
+    if (updatedRows == 0) {
+      throw new ProductOutOfStockException();
+    }
   }
 }

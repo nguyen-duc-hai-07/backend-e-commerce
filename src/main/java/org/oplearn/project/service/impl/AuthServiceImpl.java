@@ -28,9 +28,6 @@ import org.oplearn.project.exception.OtpExpiredException;
 import org.oplearn.project.exception.UserNotFoundException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.exception.UsernameAlreadyExistedException;
-import org.oplearn.project.constants.OpLearnConstants.KafkaConstant;
-import org.oplearn.project.event.ForgotPasswordEvent;
-import org.oplearn.project.event.OtpEmailEvent;
 import org.oplearn.project.repository.UserRepository;
 import org.oplearn.project.repository.redis.OtpRedisRepository;
 import org.oplearn.project.repository.redis.TokenRedisRepository;
@@ -38,7 +35,6 @@ import org.oplearn.project.security.jwt.JwtTokenProvider;
 import org.oplearn.project.service.AuthService;
 import org.oplearn.project.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -63,7 +59,6 @@ public class AuthServiceImpl implements AuthService {
   private final EmailService emailService;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
-  private final KafkaTemplate<String, Object> kafkaTemplate;
 
   @Override
   public TokenResponse login(LoginRequest request) {
@@ -103,25 +98,12 @@ public class AuthServiceImpl implements AuthService {
 
     otpRedisRepository.savePendingRegistration(request.getEmail(), pendingData, Duration.ofMinutes(5));
 
-    OtpEmailEvent emailEvent = OtpEmailEvent.builder()
-        .to(request.getEmail())
-        .subject("Mã xác thực tài khoản OTP")
-        .templateName("mail/welcome-email")
-        .variables(Map.of("recipientName", StringUtils.hasText(request.getFullName()) ? request.getFullName() : request.getUsername(), "otpCode", otpCode))
-        .createdAt(Instant.now())
-        .build();
-
-    kafkaTemplate.send(KafkaConstant.TOPIC_AUTH_REGISTRATION_OTP, request.getEmail(), emailEvent)
-        .whenComplete((result, ex) -> {
-          if (ex != null) {
-            log.error("(register) gửi OtpEmailEvent vào Kafka thất bại cho email {}: {}", request.getEmail(), ex.getMessage());
-          } else {
-            log.info("(register) đã gửi OtpEmailEvent vào topic {} [partition {}] với offset {}",
-                result.getRecordMetadata().topic(),
-                result.getRecordMetadata().partition(),
-                result.getRecordMetadata().offset());
-          }
-        });
+    emailService.sendHtmlEmail(
+        request.getEmail(),
+        "Mã xác thực tài khoản OTP",
+        "mail/welcome-email",
+        Map.of("recipientName", StringUtils.hasText(request.getFullName()) ? request.getFullName() : request.getUsername(), "otpCode", otpCode)
+    );
   }
 
   @Override
@@ -168,25 +150,12 @@ public class AuthServiceImpl implements AuthService {
     String otpCode = String.valueOf((int) ((Math.random() * 900000) + 100000));
     otpRedisRepository.saveForgotPasswordOtp(request.getEmail(), otpCode, Duration.ofMinutes(5));
 
-    ForgotPasswordEvent forgotPasswordEvent = ForgotPasswordEvent.builder()
-        .to(request.getEmail())
-        .subject("Yêu cầu đặt lại mật khẩu")
-        .templateName("mail/forgot-password-email")
-        .variables(Map.of("recipientName", user.getUsername(), "otpCode", otpCode))
-        .createdAt(Instant.now())
-        .build();
-
-    kafkaTemplate.send(KafkaConstant.TOPIC_AUTH_FORGOT_PASSWORD_OTP, request.getEmail(), forgotPasswordEvent)
-        .whenComplete((result, ex) -> {
-          if (ex != null) {
-            log.error("(forgotPassword) gửi ForgotPasswordEvent thất bại cho email {}: {}", request.getEmail(), ex.getMessage());
-          } else {
-            log.info("(forgotPassword) đã gửi ForgotPasswordEvent vào topic {} [partition {}] với offset {}",
-                result.getRecordMetadata().topic(),
-                result.getRecordMetadata().partition(),
-                result.getRecordMetadata().offset());
-          }
-        });
+    emailService.sendHtmlEmail(
+        request.getEmail(),
+        "Yêu cầu đặt lại mật khẩu",
+        "mail/forgot-password-email",
+        Map.of("recipientName", user.getUsername(), "otpCode", otpCode)
+    );
   }
 
   @Override

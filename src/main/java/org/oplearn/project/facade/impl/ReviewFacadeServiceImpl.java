@@ -9,6 +9,7 @@ import org.oplearn.project.dto.response.ReviewResponse;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ReviewFacadeService;
+import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.ProductService;
 import org.oplearn.project.service.ReviewService;
 import org.oplearn.project.service.UserService;
@@ -26,6 +27,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   private final ReviewService reviewService;
   private final ProductService productService;
   private final UserService userService;
+  private final OrderService orderService;
 
   private User currentUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,6 +49,11 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
 
     User currentUser = currentUser();
     request.setUserId(currentUser.getId());
+
+    if(!orderService.hasUserPurchasedProductAndCompleted(currentUser.getId(), request.getProductId())) {
+      log.warn("(create) user not authorized");
+      throw new UserUnauthorizedException();
+    }
 
     ReviewResponse saved = reviewService.create(request);
 

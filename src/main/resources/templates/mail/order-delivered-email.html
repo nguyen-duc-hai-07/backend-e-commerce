@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng đã được giao thành công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .body-content {
+            padding: 30px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        .order-summary {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin: 20px 0;
+        }
+        .order-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .order-summary-row:last-child {
+            margin-bottom: 0;
+        }
+        .order-summary-label {
+            color: #64748b;
+        }
+        .order-summary-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .alert-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 25px 0;
+        }
+        .alert-box h4 {
+            margin: 0 0 10px 0;
+            color: #b45309;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .alert-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #78350f;
+            font-size: 14px;
+        }
+        .alert-box li {
+            margin-bottom: 8px;
+        }
+        .alert-box li:last-child {
+            margin-bottom: 0;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0 10px 0;
+        }
+        .btn-action {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff !important;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 3px 6px rgba(16, 185, 129, 0.3);
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            background-color: #fafafa;
+            border-top: 1px solid #eeeeee;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Đơn Hàng Đã Giao Thành Công 🎉📦</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="body-content">
+            <p>Xin chào <strong th:text="${recipientName}">Quý khách</strong>,</p>
+            <p>Đơn vị vận chuyển đã thông báo giao thành công đơn hàng của bạn. Hy vọng bạn hài lòng với các sản phẩm vừa nhận!</p>
+
+            <!-- Chi tiết đơn hàng tóm tắt -->
+            <div class="order-summary">
+                <div class="order-summary-row">
+                    <span class="order-summary-label">Mã đơn hàng:</span>
+                    <span class="order-summary-value" th:text="${orderCode}">HAZI261002203730K8M2</span>
+                </div>
+                <div class="order-summary-row" th:if="${deliveredTime != null}">
+                    <span class="order-summary-label">Thời gian giao:</span>
+                    <span class="order-summary-value" th:text="${deliveredTime}">08/10/2026 17:30</span>
+                </div>
+                <div class="order-summary-row" th:if="${totalAmount != null}">
+                    <span class="order-summary-label">Tổng thanh toán:</span>
+                    <span class="order-summary-value" th:text="${#numbers.formatDecimal(totalAmount, 0, 'POINT', 0, 'POINT') + ' đ'}">350.000 đ</span>
+                </div>
+            </div>
+
+            <!-- Khối nhắc nhở 7 ngày & quyền khiếu nại/đổi trả -->
+            <div class="alert-box">
+                <h4>⚠️ Thông Tin Quan Trọng Cần Lưu Ý</h4>
+                <ul>
+                    <li>
+                        <strong>Xác nhận đơn hàng:</strong> Vui lòng mở gói hàng kiểm tra. Nếu mọi thứ đều ổn, hãy bấm nút <em>"Đã nhận hàng"</em> để hoàn tất đơn hàng.
+                    </li>
+                    <li>
+                        <strong>Tự động hoàn thành sau 7 ngày:</strong> Nếu bạn không bấm xác nhận và không có khiếu nại gì, hệ thống sẽ <strong>tự động chuyển đơn sang Hoàn thành (COMPLETED) sau 7 ngày</strong> kể từ hôm nay.
+                    </li>
+                    <li>
+                        <strong>Chính sách Trả hàng / Đổi trả:</strong> Trong vòng <strong>7 ngày</strong> này, nếu sản phẩm có lỗi, hư hỏng hoặc không đúng mô tả, bạn có quyền gửi yêu cầu <em>"Đổi trả / Hoàn tiền"</em> trực tiếp trên trang chi tiết đơn hàng hoặc liên hệ CSKH để được bảo vệ quyền lợi.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nút bấm xác nhận -->
+            <div class="btn-wrapper" th:if="${orderDetailUrl != null}">
+                <a th:href="${orderDetailUrl}" class="btn-action" target="_blank">
+                    Xem & Xác Nhận Đơn Hàng
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi!</p>
+            <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ hotline hoặc phản hồi trực tiếp email này.</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #cbd5e1;">© Base Project E-Commerce. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
