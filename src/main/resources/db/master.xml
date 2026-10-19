@@ -38,5 +38,7 @@
   <include file="db/changelog/031-add-target-to-vouchers.xml"/>
   <include file="db/changelog/032-drop-max-claim-per-user-from-vouchers.xml"/>
   <include file="db/changelog/033-create-table-refunds.xml"/>
+  <include file="db/changelog/034-drop-refund-account-from-return-requests.xml"/>
+  <include file="db/changelog/035-add-display-order-to-return-request-images.xml"/>
 
 </databaseChangeLog>
