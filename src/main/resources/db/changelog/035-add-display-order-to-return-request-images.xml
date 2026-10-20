@@ -1,0 +1,21 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="035-add-display-order-to-return-request-images" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <columnExists tableName="return_request_images" columnName="display_order"/>
+      </not>
+    </preConditions>
+    <addColumn tableName="return_request_images">
+      <column name="display_order" type="INT" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>

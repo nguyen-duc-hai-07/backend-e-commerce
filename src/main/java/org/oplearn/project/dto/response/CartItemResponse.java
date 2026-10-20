@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.oplearn.project.entity.CartItem;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 @Data
@@ -32,6 +33,12 @@ public class CartItemResponse {
 
   private String productName;
   private String productThumbnailUrl;
+  private String variantImageUrl;
+  private String thumbnailUrl;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public CartItemResponse(
     Long id,
@@ -57,9 +64,34 @@ public class CartItemResponse {
     this.stockQuantity = stockQuantity;
     this.productName = productName;
     this.productThumbnailUrl = productThumbnailUrl;
+    this.thumbnailUrl = productThumbnailUrl;
     if (price != null && quantity != null) {
       this.totalPrice = price.multiply(BigDecimal.valueOf(quantity));
     }
+  }
+
+  public CartItemResponse(
+    Long id,
+    Long userId,
+    Long variantId,
+    Integer quantity,
+    Long productId,
+    String sku,
+    Map<String, String> attributes,
+    BigDecimal price,
+    Integer stockQuantity,
+    String productName,
+    String productThumbnailUrl,
+    Boolean isDeleted,
+    String createdBy,
+    Instant createdAt,
+    Instant updatedAt
+  ) {
+    this(id, userId, variantId, quantity, productId, sku, attributes, price, stockQuantity, productName, productThumbnailUrl);
+    this.isDeleted = isDeleted;
+    this.createdBy = createdBy;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   public static CartItemResponse from(CartItem cartItem) {
@@ -71,6 +103,10 @@ public class CartItemResponse {
         .userId(cartItem.getUserId())
         .variantId(cartItem.getVariantId())
         .quantity(cartItem.getQuantity())
+        .isDeleted(cartItem.getIsDeleted())
+        .createdBy(cartItem.getCreatedBy())
+        .createdAt(cartItem.getCreatedAt())
+        .updatedAt(cartItem.getUpdatedAt())
         .build();
   }
 
@@ -84,6 +120,8 @@ public class CartItemResponse {
       response.setAttributes(variant.getAttributes());
       response.setPrice(variant.getPrice());
       response.setStockQuantity(variant.getQuantity());
+      response.setVariantImageUrl(variant.getImageUrl());
+      response.setThumbnailUrl(variant.getImageUrl());
       if (variant.getPrice() != null && response.getQuantity() != null) {
         response.setTotalPrice(variant.getPrice().multiply(BigDecimal.valueOf(response.getQuantity())));
       }
@@ -103,6 +141,9 @@ public class CartItemResponse {
     if (product != null) {
       response.setProductName(product.getName());
       response.setProductThumbnailUrl(product.getThumbnailUrl());
+      if (response.getThumbnailUrl() == null || response.getThumbnailUrl().isBlank()) {
+        response.setThumbnailUrl(product.getThumbnailUrl());
+      }
     }
     return response;
   }

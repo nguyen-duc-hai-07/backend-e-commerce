@@ -6,6 +6,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
   <changeSet id="015-create-vouchers" author="ecommerce">
+    <validCheckSum>9:99cc1191363cdf1ec793ab20a41bde90</validCheckSum>
+    <validCheckSum>any</validCheckSum>
     <createTable tableName="vouchers">
       <column name="id" type="BIGSERIAL">
         <constraints primaryKey="true" nullable="false"/>
@@ -38,10 +40,6 @@
       </column>
 
       <column name="claimed_count" type="INT" defaultValueNumeric="0">
-        <constraints nullable="false"/>
-      </column>
-
-      <column name="max_claim_per_user" type="INT" defaultValueNumeric="1">
         <constraints nullable="false"/>
       </column>
 

@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oplearn.project.entity.Address;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,6 +25,10 @@ public class AddressResponse {
   private String wardCode;
   private String streetAddress;
   private Boolean isDefault;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static AddressResponse from(Address address) {
     if (address == null) {
@@ -38,6 +44,10 @@ public class AddressResponse {
         .wardCode(address.getWardCode())
         .streetAddress(address.getStreetAddress())
         .isDefault(address.getIsDefault())
+        .isDeleted(address.getIsDeleted())
+        .createdBy(address.getCreatedBy())
+        .createdAt(address.getCreatedAt())
+        .updatedAt(address.getUpdatedAt())
         .build();
   }
 }

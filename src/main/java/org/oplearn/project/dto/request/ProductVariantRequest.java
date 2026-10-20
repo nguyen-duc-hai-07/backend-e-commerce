@@ -35,4 +35,9 @@ public class ProductVariantRequest {
   @NotNull(message = "product_variant.quantity.not_null")
   @Min(value = 0, message = "product_variant.quantity.min")
   private Integer quantity;
+
+  @Min(value = 1, message = "product_variant.weight.min")
+  private Integer weight;
+
+  private String imageUrl;
 }
