@@ -12,11 +12,9 @@ import org.oplearn.project.exception.VoucherAlreadyClaimedException;
 import org.oplearn.project.exception.VoucherClaimLimitExceededException;
 import org.oplearn.project.exception.VoucherUsagePeriodInvalidException;
 import org.oplearn.project.facade.UserVoucherFacadeService;
-import org.oplearn.project.service.UserService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.UserVoucherService;
 import org.oplearn.project.service.VoucherService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,20 +27,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserVoucherFacadeServiceImpl implements UserVoucherFacadeService {
   private final UserVoucherService userVoucherService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final VoucherService voucherService;
   private final Clock clock;
 
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
   @Override
   @Transactional
   public UserVoucherResponse claimVoucher(UserVoucherRequest request) {
     log.info("(facade) claim voucher");
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
 
     if(userVoucherService.exists(request.getUserId(), request.getVoucherId())) {
@@ -71,7 +65,7 @@ public class UserVoucherFacadeServiceImpl implements UserVoucherFacadeService {
   public List<OrderVoucherResponse> findAvailableVouchersForOrder(VoucherTarget target) {
     log.info("(facade) findAvailableVouchersForOrder");
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     return userVoucherService.findAvailableVouchersForOrder(currentUser.getId(), target, clock.instant());
   }
