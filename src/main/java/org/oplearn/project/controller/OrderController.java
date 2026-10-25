@@ -53,6 +53,20 @@ public class OrderController {
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findByUserIdAndStatus(request));
   }
 
+  @PatchMapping("/{id}/shipping")
+  public ResponseGeneral<Void> shipping(@PathVariable("id") Long id) {
+    log.info("(shipping) id: {}", id);
+    facade.shipping(id);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE);
+  }
+
+  @PatchMapping("/{id}/delivered")
+  public ResponseGeneral<Void> delivered(@PathVariable("id") Long id) {
+    log.info("(delivered) id: {}", id);
+    facade.delivered(id);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE);
+  }
+
   @PatchMapping("/{id}/complete")
   public ResponseGeneral<Void> complete(@PathVariable("id") Long id) {
     log.info("(complete) id: {}", id);
