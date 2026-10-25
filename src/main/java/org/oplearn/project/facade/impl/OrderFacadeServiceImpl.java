@@ -41,7 +41,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final EmailService emailService;
   private final VoucherService voucherService;
   private final UserVoucherService userVoucherService;
-  private final ReturnRqService returnRqService;
+  private final NotificationService notificationService;
 
   @Override
   @Transactional
@@ -91,6 +91,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
     if (request.getVoucherShippingId() != null) {
       userVoucherService.useVoucher(currentUser.getId(), request.getVoucherShippingId(), orderResponse.getId());
     }
+
+    notificationService.createAndSendOrderStatus(orderResponse);
 
     return orderResponse;
   }
@@ -294,6 +296,9 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
     }
 
     orderService.updateStatus(id, OrderStatus.COMPLETED);
+
+    order.setStatus(OrderStatus.COMPLETED);
+    notificationService.createAndSendOrderStatus(order);
   }
 
   @Override
@@ -312,23 +317,41 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   }
 
   @Override
-  public void handleReturnRequest(Long id) {
-    log.info("(facade) handleReturnRequest order id: {}", id);
+  @Transactional
+  public void shipping(Long id) {
+    log.info("(facade) shipping order id: {}", id);
 
-    User currentUser = securityHelper.currentUser();
-    OrderResponse currentOrder = this.detail(id);
+    OrderResponse order = orderService.detail(id);
 
-    if(!currentUser.getId().equals(currentOrder.getUserId())) {
-      log.warn("(handleReturnRequest) user not authorized");
-      throw new UserUnauthorizedException();
-    }
-
-    if(currentOrder.getStatus() != OrderStatus.COMPLETED) {
-      log.warn("(handleReturnRequest) order status not completed");
+    if (order.getStatus() != OrderStatus.CONFIRMED && order.getStatus() != OrderStatus.PAID) {
+      log.warn("(shipping) order status must be CONFIRMED or PAID, current: {}", order.getStatus());
       throw new InvalidOrderStatusException();
     }
 
-    orderService.updateStatus(currentOrder.getId() , OrderStatus.RETURN_REQUESTED);
+    orderService.updateStatus(id, OrderStatus.SHIPPING);
+
+    order.setStatus(OrderStatus.SHIPPING);
+    notificationService.createAndSendOrderStatus(order);
+  }
+
+  @Override
+  @Transactional
+  public void delivered(Long id) {
+    log.info("(facade) delivered order id: {}", id);
+
+    OrderResponse order = orderService.detail(id);
+
+    if (order.getStatus() != OrderStatus.SHIPPING) {
+      log.warn("(delivered) order status must be SHIPPING, current: {}", order.getStatus());
+      throw new InvalidOrderStatusException();
+    }
+
+    paymentService.updateStatusByOrderId(order.getId(), PaymentStatus.SUCCESS);
+
+    orderService.updateStatus(id, OrderStatus.DELIVERED);
+
+    order.setStatus(OrderStatus.DELIVERED);
+    notificationService.createAndSendOrderStatus(order);
   }
 
   private void executeCancel(OrderResponse currentOrder) {
@@ -354,6 +377,9 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
     paymentService.updateStatusByOrderId(currentOrder.getId(), PaymentStatus.FAILED);
 
     orderService.updateStatus(currentOrder.getId(), OrderStatus.CANCELLED);
+
+    currentOrder.setStatus(OrderStatus.CANCELLED);
+    notificationService.createAndSendOrderStatus(currentOrder);
   }
 
   @Override
@@ -385,6 +411,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
 
     for(OrderResponse order : orders) {
       orderService.updateStatus(order.getId(), OrderStatus.COMPLETED);
+      order.setStatus(OrderStatus.COMPLETED);
+      notificationService.createAndSendOrderStatus(order);
     }
   }
 

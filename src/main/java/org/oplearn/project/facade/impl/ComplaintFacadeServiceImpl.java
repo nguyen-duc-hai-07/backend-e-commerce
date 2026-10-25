@@ -12,6 +12,7 @@ import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ComplaintFacadeService;
 import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.ComplaintService;
+import org.oplearn.project.service.NotificationService;
 import org.oplearn.project.service.OrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
   private final ComplaintService complaintService;
   private final SecurityHelper securityHelper;
   private final OrderService orderService;
+  private final NotificationService notificationService;
 
   @Override
   @Transactional
@@ -42,7 +44,11 @@ public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
 
     request.setUserId(currentUser.getId());
 
-    return complaintService.create(request);
+    ComplaintResponse response = complaintService.create(request);
+
+    notificationService.createAndSendComplaintReply(response);
+
+    return response;
   }
 
   @Override

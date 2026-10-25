@@ -16,6 +16,7 @@ import org.oplearn.project.exception.RefundNotAllowedForCodException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.RefundFacadeService;
 import org.oplearn.project.security.SecurityHelper;
+import org.oplearn.project.service.NotificationService;
 import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.RefundService;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
   private final SecurityHelper securityHelper;
   private final OrderService orderService;
   private final RefundService refundService;
+  private final NotificationService notificationService;
 
   @Override
   @Transactional
@@ -57,7 +59,11 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
     request.setOrderId(order.getId());
     request.setAmount(order.getTotalAmount());
 
-    return refundService.create(request);
+    RefundResponse refundResponse = refundService.create(request);
+
+    notificationService.createAndSendRefundStatus(refundResponse);
+
+    return refundResponse;
   }
 
   @Override
@@ -79,7 +85,9 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
   @Transactional
   public RefundResponse update(Long id, RefundUpdateRequest request) {
     log.info("(facade) update refund id: {}, request: {}", id, request);
-    return refundService.update(id, request);
+    RefundResponse updated = refundService.update(id, request);
+    notificationService.createAndSendRefundStatus(updated);
+    return updated;
   }
 
   @Override

@@ -20,7 +20,9 @@ public interface OrderFacadeService {
 
   void cancel(Long id);
 
-  void handleReturnRequest(Long id);
+  void shipping(Long id);
+
+  void delivered(Long id);
 
   void autoCompleteDeliveredOrders();
 
