@@ -9,11 +9,11 @@ import org.oplearn.project.dto.response.ReviewResponse;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ReviewFacadeService;
+import org.oplearn.project.security.SecurityHelper;
+import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.ProductService;
 import org.oplearn.project.service.ReviewService;
 import org.oplearn.project.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +26,8 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   private final ReviewService reviewService;
   private final ProductService productService;
   private final UserService userService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
+  private final OrderService orderService;
+  private final SecurityHelper securityHelper;
 
   @Override
   @Transactional
@@ -45,8 +36,13 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
 
     productService.checkProductExist(request.getProductId());
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
+
+    if(!orderService.hasUserPurchasedProductAndCompleted(currentUser.getId(), request.getProductId())) {
+      log.warn("(create) user not authorized");
+      throw new UserUnauthorizedException();
+    }
 
     ReviewResponse saved = reviewService.create(request);
 
@@ -62,7 +58,7 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
   public ReviewResponse update(ReviewRequest request, Long id) {
     log.info("(facade) update review");
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     ReviewResponse existing = reviewService.detail(id);
 
@@ -89,9 +85,8 @@ public class ReviewFacadeServiceImpl implements ReviewFacadeService {
 
     ReviewResponse existing = reviewService.detail(id);
 
-    boolean isOwner = currentUser().getId().equals(existing.getUserId());
-
-    boolean isAdmin = isAdmin();
+    boolean isOwner = securityHelper.currentUser().getId().equals(existing.getUserId());
+    boolean isAdmin = securityHelper.isAdmin();
 
     if(!isAdmin && !isOwner) {
       log.warn("(delete) user not authorized");

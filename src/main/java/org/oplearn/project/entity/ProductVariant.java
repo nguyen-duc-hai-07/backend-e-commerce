@@ -36,4 +36,11 @@ public class ProductVariant extends BaseEntity {
   @Column(name = "quantity", nullable = false)
   @Builder.Default
   private Integer quantity = 0;
+
+  @Column(name = "weight", nullable = false)
+  @Builder.Default
+  private Integer weight = 200;
+
+  @Column(name = "image_url", length = 500)
+  private String imageUrl;
 }

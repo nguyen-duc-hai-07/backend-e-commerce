@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oplearn.project.entity.PaymentMethod;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,6 +20,10 @@ public class PaymentMethodResponse {
   private Long id;
   private String name;
   private String code;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static PaymentMethodResponse from(PaymentMethod paymentMethod) {
     if (paymentMethod == null) {
@@ -27,6 +33,10 @@ public class PaymentMethodResponse {
         .id(paymentMethod.getId())
         .name(paymentMethod.getName())
         .code(paymentMethod.getCode())
+        .isDeleted(paymentMethod.getIsDeleted())
+        .createdBy(paymentMethod.getCreatedBy())
+        .createdAt(paymentMethod.getCreatedAt())
+        .updatedAt(paymentMethod.getUpdatedAt())
         .build();
   }
 }

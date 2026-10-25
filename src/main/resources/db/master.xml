@@ -32,5 +32,14 @@
   <include file="db/changelog/024-add-product-search-index.xml"/>
   <include file="db/changelog/025-add-product-min-price-and-sold-count.xml"/>
   <include file="db/changelog/026-add-partial-indexes-for-reviews.xml"/>
+  <include file="db/changelog/027-add-weight-to-product-variants.xml"/>
+  <include file="db/changelog/028-add-image-url-to-product-variants.xml"/>
+  <include file="db/changelog/030-add-index-orders-created-at.xml"/>
+  <include file="db/changelog/031-add-target-to-vouchers.xml"/>
+  <include file="db/changelog/032-drop-max-claim-per-user-from-vouchers.xml"/>
+  <include file="db/changelog/033-create-table-refunds.xml"/>
+  <include file="db/changelog/034-drop-refund-account-from-return-requests.xml"/>
+  <include file="db/changelog/035-add-display-order-to-return-request-images.xml"/>
+  <include file="db/changelog/036-update-conversations-for-broadcast.xml"/>
 
 </databaseChangeLog>
