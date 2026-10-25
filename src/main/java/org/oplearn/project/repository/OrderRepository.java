@@ -28,7 +28,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   void softDeleteById(Long id);
 
   @Modifying
-  @Query("UPDATE Order o SET o.status = :status WHERE o.id = :id AND o.isDeleted = false")
+  @Query("UPDATE Order o SET o.status = :status, o.updatedAt = CURRENT_TIMESTAMP WHERE o.id = :id AND o.isDeleted = false")
   void updateStatusById(Long id, String status);
 
   @Query("""
