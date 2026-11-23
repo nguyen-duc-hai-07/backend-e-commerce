@@ -20,6 +20,7 @@ import org.oplearn.project.entity.User;
 import org.oplearn.project.enums.AuthProvider;
 import org.oplearn.project.enums.UserRole;
 import org.oplearn.project.enums.UserStatus;
+import org.oplearn.project.event.auth.UserRegisteredEvent;
 import org.oplearn.project.exception.EmailAlreadyExistedException;
 import org.oplearn.project.exception.InvalidCredentialException;
 import org.oplearn.project.exception.InvalidOtpException;
@@ -35,6 +36,7 @@ import org.oplearn.project.security.jwt.JwtTokenProvider;
 import org.oplearn.project.service.AuthService;
 import org.oplearn.project.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -59,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
   private final EmailService emailService;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   public TokenResponse login(LoginRequest request) {
@@ -101,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
     emailService.sendHtmlEmail(
         request.getEmail(),
         "Mã xác thực tài khoản OTP",
-        "mail/welcome-email",
+        "mail/register-otp-email",
         Map.of("recipientName", StringUtils.hasText(request.getFullName()) ? request.getFullName() : request.getUsername(), "otpCode", otpCode)
     );
   }
@@ -138,6 +141,8 @@ public class AuthServiceImpl implements AuthService {
     userRepository.save(user);
 
     otpRedisRepository.deletePendingRegistration(request.getEmail());
+
+    eventPublisher.publishEvent(UserRegisteredEvent.from(user));
 
     return issueTokens(user);
   }
@@ -225,7 +230,9 @@ public class AuthServiceImpl implements AuthService {
           .providerId(googleUserId)
           .status(UserStatus.ACTIVE)
           .build();
-        return userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+        eventPublisher.publishEvent(UserRegisteredEvent.from(savedUser));
+        return savedUser;
       });
 
     if (user.getStatus() == UserStatus.INACTIVE) {

@@ -3,33 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mã xác thực tài khoản</title>
+    <title>Chào mừng bạn gia nhập!</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 30px; text-align: center; color: #ffffff; }
-        .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
-        .body-content { padding: 30px; color: #333333; line-height: 1.6; }
-        .otp-box { background-color: #eff6ff; border: 2px dashed #3b82f6; border-radius: 6px; padding: 15px; text-align: center; margin: 25px 0; font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1d4ed8; }
-        .footer { padding: 20px; text-align: center; font-size: 12px; color: #888888; background-color: #fafafa; border-top: 1px solid #eeeeee; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+        .container {
+            max-width: 580px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            padding: 32px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .body-content {
+            padding: 30px;
+            color: #333333;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .welcome-card {
+            background-color: #f8fafc;
+            border-left: 4px solid #6366f1;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+        .welcome-card h3 {
+            margin: 0 0 8px 0;
+            color: #312e81;
+            font-size: 16px;
+        }
+        .welcome-card p {
+            margin: 0;
+            color: #475569;
+            font-size: 14px;
+        }
+        .benefit-list {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .benefit-list li {
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0 15px 0;
+        }
+        .btn-action {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #ffffff !important;
+            padding: 14px 30px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(99, 102, 241, 0.35);
+        }
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            background-color: #fafafa;
+            border-top: 1px solid #eeeeee;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>Xác Thực Tài Khoản 🔐</h1>
+            <h1>Chào Mừng Bạn Gia Nhập! 🎉✨</h1>
         </div>
+
+        <!-- Body -->
         <div class="body-content">
-            <p>Xin chào <strong th:text="${recipientName}">Người dùng</strong>,</p>
-            <p>Cảm ơn bạn đã đăng ký tài khoản. Dưới đây là mã xác thực OTP của bạn:</p>
-            
-            <div class="otp-box" th:text="${otpCode}">123456</div>
-            
-            <p>Mã này có hiệu lực trong <strong>5 phút</strong>. Vì lý do bảo mật, tuyệt đối không chia sẻ mã này cho bất kỳ ai khác.</p>
-            <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email.</p>
+            <p>Xin chào <strong th:text="${recipientName}">Bạn mới</strong>,</p>
+            <p>Chúc mừng bạn đã tạo tài khoản thành công! Chúng tôi rất vui mừng được đồng hành cùng bạn trên hành trình mua sắm tuyệt vời này.</p>
+
+            <div class="welcome-card">
+                <h3>Tài khoản của bạn đã sẵn sàng! 🚀</h3>
+                <p>Bạn có thể khám phá hàng ngàn sản phẩm chất lượng cao cùng các chương trình ưu đãi độc quyền.</p>
+            </div>
+
+            <ul class="benefit-list">
+                <li>🎁 <strong>Voucher chào mừng:</strong> Hàng loạt mã giảm giá dành riêng cho thành viên mới.</li>
+                <li>🚚 <strong>Giao hàng nhanh chóng:</strong> Theo dõi đơn hàng theo thời gian thực dễ dàng.</li>
+                <li>🔒 <strong>Thanh toán bảo mật:</strong> Đa dạng hình thức thanh toán COD hoặc chuyển khoản qua mã QR.</li>
+            </ul>
+
+            <p>Hãy bắt đầu trải nghiệm mua sắm ngay hôm nay!</p>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-            <p>© Base Project Starter. All rights reserved.</p>
+            <p>Nếu bạn có bất kỳ thắc mắc nào, đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng phục vụ.</p>
+            <p>© Base Project E-Commerce. All rights reserved.</p>
         </div>
     </div>
 </body>
