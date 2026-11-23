@@ -101,6 +101,8 @@ ghtk:
     timeout-ms: ${GHTK_TIMEOUT_MS:5000}
     default-fee: 30000
     shop:
+      name: ${GHTK_SHOP_NAME:Hazi Store}
+      tel: ${GHTK_SHOP_TEL:0931504117}
       province: ${GHTK_SHOP_PROVINCE:Hà Nội}
       district: ${GHTK_SHOP_DISTRICT:Huyện Thanh Trì}
       ward: ${GHTK_SHOP_WARD:Xã Thanh Liệt}

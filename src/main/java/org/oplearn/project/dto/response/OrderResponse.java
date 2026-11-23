@@ -33,6 +33,7 @@ public class OrderResponse {
   private BigDecimal totalAmount;
   private OrderStatus status;
   private String note;
+  private String trackingCode;
   private Long originalOrderId;
   private Boolean isDeleted;
   private String createdBy;
@@ -122,6 +123,7 @@ public class OrderResponse {
         .totalAmount(order.getTotalAmount())
         .status(order.getStatus())
         .note(order.getNote())
+        .trackingCode(order.getTrackingCode())
         .originalOrderId(order.getOriginalOrderId())
         .isDeleted(order.getIsDeleted())
         .createdBy(order.getCreatedBy())
