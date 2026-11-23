@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     container_name: ecom-app
+    env_file:
+      - .env
     ports:
       - "${PORT:-8088}:8088"
     environment:

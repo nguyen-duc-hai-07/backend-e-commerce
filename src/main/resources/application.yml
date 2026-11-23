@@ -34,8 +34,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:haziecommerce.service@gmail.com}
-    password: ${MAIL_PASSWORD:cofvwjdbljfhpwxp}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -86,32 +86,32 @@ aws:
   s3:
     endpoint: ${AWS_S3_ENDPOINT:https://rustfs.tuvidausotoanthu.vn}
     region: ${AWS_S3_REGION:us-east-1}
-    access-key: ${AWS_S3_ACCESS_KEY:tuviadmin}
-    secret-key: ${AWS_S3_SECRET_KEY:bdd21afecd0f29be9fa6c523b27415c22c8e650c6dfe7a3b}
+    access-key: ${AWS_S3_ACCESS_KEY}
+    secret-key: ${AWS_S3_SECRET_KEY}
     bucket-name: ${AWS_S3_BUCKET_NAME:hazi-ecommerce-media}
 
 google:
-  client-id: ${GOOGLE_CLIENT_ID:696068443228-q8usbq5cphbgq27n03t3g0eji1holkvr.apps.googleusercontent.com}
+  client-id: ${GOOGLE_CLIENT_ID:}
 
 ghtk:
   api:
     base-url: ${GHTK_BASE_URL:https://services.giaohangtietkiem.vn}
-    token: ${GHTK_TOKEN:55HRknDef9iuagQNTl0Cau9gQtM6NQXOvnHM2H8}
-    client-source: ${GHTK_CLIENT_SOURCE:S23118336}
+    token: ${GHTK_TOKEN:}
+    client-source: ${GHTK_CLIENT_SOURCE:}
     timeout-ms: ${GHTK_TIMEOUT_MS:5000}
-    default-fee: 30000
+    default-fee: ${GHTK_DEFAULT_FEE:30000}
     shop:
       name: ${GHTK_SHOP_NAME:Hazi Store}
-      tel: ${GHTK_SHOP_TEL:0931504117}
+      tel: ${GHTK_SHOP_TEL:}
       province: ${GHTK_SHOP_PROVINCE:Hà Nội}
       district: ${GHTK_SHOP_DISTRICT:Huyện Thanh Trì}
       ward: ${GHTK_SHOP_WARD:Xã Thanh Liệt}
       address: ${GHTK_SHOP_ADDRESS:nhà số 5, ngách 21/84 Yên Xá}
 sepay:
-  account-number: ${SEPAY_ACCOUNT_NUMBER:0931504117}
+  account-number: ${SEPAY_ACCOUNT_NUMBER:}
   bank: ${SEPAY_BANK:MBBank}
-  account-name: ${SEPAY_ACCOUNT_NAME:NGUYEN DUC HAI}
-  api-key: ${SEPAY_API_KEY:PAFDL0WEJACS6I3PITVEZSQKJZTN2QYUMCUBR5MBBVDCZN5GEDFCSNNF7OTOHRX7}
-  webhook-token: ${SEPAY_WEBHOOK_TOKEN:hazii_sepay_secret_key_2026}
+  account-name: ${SEPAY_ACCOUNT_NAME:}
+  api-key: ${SEPAY_API_KEY:}
+  webhook-token: ${SEPAY_WEBHOOK_TOKEN:}
   qr-template: ${SEPAY_QR_TEMPLATE:compact} # compact, qronly, etc.
   order-prefix: ${SEPAY_ORDER_PREFIX:ORD}
