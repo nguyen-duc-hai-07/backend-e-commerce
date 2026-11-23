@@ -106,6 +106,9 @@ public class OpLearnConstants {
     public static final String[] HTTP_METHOD_DELETE_PUBLIC = {
     };
 
+    public static final String[] HTTP_METHOD_PATCH_PUBLIC = {
+    };
+
     public static final String[] HTTP_METHOD_GET_ADMIN = {
       "/api/v1/users",
       "/api/v1/admin/statistics/**",
@@ -131,7 +134,8 @@ public class OpLearnConstants {
       "/api/v1/review-replies/**",
       "/api/v1/payment-methods/**",
       "/api/v1/payments",
-      "/api/v1/vouchers"
+      "/api/v1/vouchers",
+      "/api/v1/notifications"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {
@@ -159,6 +163,11 @@ public class OpLearnConstants {
       "/api/v1/review-replies/**",
       "/api/v1/payment-methods/**",
       "/api/v1/conversations/**"
+    };
+
+    public static final String[] HTTP_METHOD_PATCH_ADMIN = {
+      "/api/v1/orders/*/shipping",
+      "/api/v1/orders/*/delivered"
     };
 
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};

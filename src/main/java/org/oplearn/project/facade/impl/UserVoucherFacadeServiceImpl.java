@@ -13,6 +13,7 @@ import org.oplearn.project.exception.VoucherClaimLimitExceededException;
 import org.oplearn.project.exception.VoucherUsagePeriodInvalidException;
 import org.oplearn.project.facade.UserVoucherFacadeService;
 import org.oplearn.project.security.SecurityHelper;
+import org.oplearn.project.service.NotificationService;
 import org.oplearn.project.service.UserVoucherService;
 import org.oplearn.project.service.VoucherService;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class UserVoucherFacadeServiceImpl implements UserVoucherFacadeService {
   private final UserVoucherService userVoucherService;
   private final SecurityHelper securityHelper;
   private final VoucherService voucherService;
+  private final NotificationService notificationService;
   private final Clock clock;
 
   @Override
@@ -55,8 +57,11 @@ public class UserVoucherFacadeServiceImpl implements UserVoucherFacadeService {
     }
 
     UserVoucherResponse response = userVoucherService.claimVoucher(request);
+    response.setVoucher(voucher);
 
     voucherService.decreaseQuantity(voucher.getId());
+
+    notificationService.createAndSendUserVoucher(response);
 
     return response;
   }

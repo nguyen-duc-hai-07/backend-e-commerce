@@ -18,6 +18,7 @@ import org.oplearn.project.exception.ReturnRequestLimitExceededException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ReturnRqFacadeService;
 import org.oplearn.project.security.SecurityHelper;
+import org.oplearn.project.service.NotificationService;
 import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.ReturnRqService;
 import org.oplearn.project.service.UserVoucherService;
@@ -38,6 +39,7 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
   private final SecurityHelper securityHelper;
   private final OrderService orderService;
   private final UserVoucherService userVoucherService;
+  private final NotificationService notificationService;
 
   @Override
   @Transactional
@@ -51,6 +53,8 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
 
     ReturnRequestResponse response = returnRqService.create(request);
     orderService.updateStatus(order.getId(), OrderStatus.RETURN_REQUESTED);
+
+    notificationService.createAndSendReturnRequestStatus(response , order);
 
     return response;
   }
@@ -135,5 +139,7 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
 
       orderService.updateStatus(order.getId(), OrderStatus.COMPLETED);
     }
+
+    notificationService.createAndSendReturnRequestStatus(updated, order);
   }
 }

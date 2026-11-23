@@ -7,6 +7,7 @@ import org.oplearn.project.dto.request.VoucherRequest;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
 import org.oplearn.project.dto.response.VoucherResponse;
+import org.oplearn.project.facade.VoucherFacadeService;
 import org.oplearn.project.service.VoucherService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,14 @@ import static org.oplearn.project.constants.OpLearnConstants.VariableConstant.*;
 @RequestMapping("/api/v1/vouchers")
 public class VoucherController {
 
+  private final VoucherFacadeService facade;
   private final VoucherService service;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseGeneral<VoucherResponse> create(@Valid @RequestBody VoucherRequest request) {
     log.info("(create) request: {}", request);
-    return ResponseGeneral.ofCreated(CREATED_MESSAGE, service.create(request));
+    return ResponseGeneral.ofCreated(CREATED_MESSAGE, facade.create(request));
   }
 
   @GetMapping("/{id}")
