@@ -32,6 +32,8 @@ public class CartItemResponse {
 
   private String productName;
   private String productThumbnailUrl;
+  private String variantImageUrl;
+  private String thumbnailUrl;
 
   public CartItemResponse(
     Long id,
@@ -57,6 +59,7 @@ public class CartItemResponse {
     this.stockQuantity = stockQuantity;
     this.productName = productName;
     this.productThumbnailUrl = productThumbnailUrl;
+    this.thumbnailUrl = productThumbnailUrl;
     if (price != null && quantity != null) {
       this.totalPrice = price.multiply(BigDecimal.valueOf(quantity));
     }
@@ -84,6 +87,8 @@ public class CartItemResponse {
       response.setAttributes(variant.getAttributes());
       response.setPrice(variant.getPrice());
       response.setStockQuantity(variant.getQuantity());
+      response.setVariantImageUrl(variant.getImageUrl());
+      response.setThumbnailUrl(variant.getImageUrl());
       if (variant.getPrice() != null && response.getQuantity() != null) {
         response.setTotalPrice(variant.getPrice().multiply(BigDecimal.valueOf(response.getQuantity())));
       }
@@ -103,6 +108,9 @@ public class CartItemResponse {
     if (product != null) {
       response.setProductName(product.getName());
       response.setProductThumbnailUrl(product.getThumbnailUrl());
+      if (response.getThumbnailUrl() == null || response.getThumbnailUrl().isBlank()) {
+        response.setThumbnailUrl(product.getThumbnailUrl());
+      }
     }
     return response;
   }

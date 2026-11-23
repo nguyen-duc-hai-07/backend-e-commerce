@@ -29,23 +29,6 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-  kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      acks: all
-      retries: 3
-      properties:
-        enable.idempotence: true
-    consumer:
-      group-id: ${KAFKA_CONSUMER_GROUP:base-notification-group}
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-      properties:
-        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-        spring.json.trusted.packages: "org.oplearn.project.*"
   liquibase:
     change-log: classpath:db/master.xml
   mail:
@@ -98,8 +81,6 @@ security:
 logging:
   level:
     org.oplearn: ${LOG_LEVEL:info}
-    org.apache.kafka: WARN
-    org.springframework.kafka: INFO
 
 aws:
   s3:
@@ -111,3 +92,16 @@ aws:
 
 google:
   client-id: ${GOOGLE_CLIENT_ID:696068443228-q8usbq5cphbgq27n03t3g0eji1holkvr.apps.googleusercontent.com}
+
+ghtk:
+  api:
+    base-url: ${GHTK_BASE_URL:https://services.giaohangtietkiem.vn}
+    token: ${GHTK_TOKEN:55HRknDef9iuagQNTl0Cau9gQtM6NQXOvnHM2H8}
+    client-source: ${GHTK_CLIENT_SOURCE:S23118336}
+    timeout-ms: ${GHTK_TIMEOUT_MS:5000}
+    default-fee: 30000
+    shop:
+      province: ${GHTK_SHOP_PROVINCE:Hà Nội}
+      district: ${GHTK_SHOP_DISTRICT:Huyện Thanh Trì}
+      ward: ${GHTK_SHOP_WARD:Xã Thanh Liệt}
+      address: ${GHTK_SHOP_ADDRESS:nhà số 5, ngách 21/84 Yên Xá}

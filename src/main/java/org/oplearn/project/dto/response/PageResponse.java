@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.springframework.data.domain.Page;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +19,13 @@ public class PageResponse<T> {
 
   public static <T> PageResponse<T> of(List<T> data, Integer amount) {
     return new PageResponse<>(data, Objects.isNull(amount) ? 0 : amount.intValue());
+  }
+
+  public static <T> PageResponse<T> of(Page<T> page) {
+    if (page == null) {
+      return empty();
+    }
+    return new PageResponse<>(page.getContent(), (int) page.getTotalElements());
   }
 
   public static <T> PageResponse<T> empty() {

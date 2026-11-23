@@ -21,4 +21,8 @@ public interface ProductVariantService {
   List<ProductVariantResponse> findAllByProductId(Long productId);
 
   BigDecimal findMinPriceByProductId(Long productId);
+
+  void increaseQuantity(Long id, int quantity);
+
+  void decreaseQuantity(Long id, int quantity);
 }

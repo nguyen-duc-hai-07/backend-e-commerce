@@ -1,5 +1,6 @@
 package org.oplearn.project.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Min;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CartItemRequest {
 
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long userId;
 
   @NotNull(message = "cart_item.variant_id.not_null")

@@ -30,4 +30,12 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 
   @Query("SELECT MIN(pv.price) FROM ProductVariant pv WHERE pv.productId = :productId AND pv.isDeleted = false")
   Optional<BigDecimal> findMinPriceByProductId(@Param("productId") Long productId);
+
+  @Modifying
+  @Query("UPDATE ProductVariant pv SET pv.quantity = pv.quantity + :quantity WHERE pv.id = :id AND pv.isDeleted = false")
+  void increaseQuantity(@Param("id") Long id, @Param("quantity") int quantity);
+
+  @Modifying
+  @Query("UPDATE ProductVariant pv SET pv.quantity = pv.quantity - :quantity WHERE pv.id = :id AND pv.quantity >= :quantity AND pv.isDeleted = false")
+  int decreaseQuantity(@Param("id") Long id, @Param("quantity") int quantity);
 }
