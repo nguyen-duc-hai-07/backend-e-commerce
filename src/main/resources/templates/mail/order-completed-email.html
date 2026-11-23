@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng đã hoàn tất</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 32px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .body-content {
+            padding: 30px;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .order-summary {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin: 20px 0;
+        }
+        .order-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .order-summary-row:last-child {
+            margin-bottom: 0;
+        }
+        .order-summary-label {
+            color: #64748b;
+        }
+        .order-summary-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .thank-you-box {
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+        .thank-you-box h3 {
+            margin: 0 0 8px 0;
+            color: #065f46;
+            font-size: 16px;
+        }
+        .thank-you-box p {
+            margin: 0;
+            color: #047857;
+            font-size: 14px;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0 15px 0;
+        }
+        .btn-action {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff !important;
+            padding: 14px 30px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            background-color: #fafafa;
+            border-top: 1px solid #eeeeee;
+        }
+        .footer p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Đơn Hàng Đã Hoàn Tất 🎉✨</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="body-content">
+            <p>Xin chào <strong th:text="${recipientName}">Quý khách</strong>,</p>
+            <p>Đơn hàng của bạn đã được hoàn tất thành công. Chúng tôi xin chân thành cảm ơn bạn đã tin tưởng và mua sắm!</p>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="order-summary">
+                <div class="order-summary-row">
+                    <span class="order-summary-label">Mã đơn hàng:</span>
+                    <span class="order-summary-value" th:text="${orderCode}">HAZI261002203730K8M2</span>
+                </div>
+                <div class="order-summary-row" th:if="${completedTime != null}">
+                    <span class="order-summary-label">Thời gian hoàn tất:</span>
+                    <span class="order-summary-value" th:text="${completedTime}">23/11/2026 17:30</span>
+                </div>
+                <div class="order-summary-row" th:if="${totalAmount != null}">
+                    <span class="order-summary-label">Tổng thanh toán:</span>
+                    <span class="order-summary-value" th:text="${#numbers.formatDecimal(totalAmount, 0, 'POINT', 0, 'POINT') + ' đ'}">350.000 đ</span>
+                </div>
+            </div>
+
+            <div class="thank-you-box">
+                <h3>Bạn có hài lòng với sản phẩm? ⭐</h3>
+                <p>Ý kiến đóng góp của bạn là động lực rất lớn giúp chúng tôi không ngừng cải thiện và mang lại trải nghiệm mua sắm tuyệt vời nhất.</p>
+            </div>
+
+            <p>Hẹn gặp lại bạn trong những lần mua sắm tiếp theo với nhiều ưu đãi hấp dẫn!</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Cảm ơn bạn đã lựa chọn cửa hàng của chúng tôi!</p>
+            <p>Nếu bạn cần hỗ trợ thêm, vui lòng phản hồi trực tiếp email này hoặc liên hệ hotline CSKH.</p>
+            <p style="margin-top: 10px; color: #cbd5e1;">© Base Project E-Commerce. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
