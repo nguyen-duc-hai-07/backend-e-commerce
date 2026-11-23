@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận đặt hàng thành công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+        .container {
+            max-width: 620px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .body-content {
+            padding: 30px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        .order-info-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+        .order-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .order-info-row:last-child {
+            margin-bottom: 0;
+        }
+        .label {
+            color: #64748b;
+        }
+        .value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .qr-section {
+            background-color: #f0fdf4;
+            border: 2px dashed #22c55e;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .qr-section h3 {
+            margin: 0 0 10px 0;
+            color: #15803d;
+            font-size: 16px;
+        }
+        .qr-img {
+            max-width: 220px;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .bank-details {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+            text-align: left;
+            font-size: 13px;
+            border: 1px solid #dcfce7;
+        }
+        .bank-details p {
+            margin: 4px 0;
+        }
+        .highlight-text {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .items-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .item-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .item-sku {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .pricing-summary {
+            width: 100%;
+            margin-top: 15px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 10px;
+        }
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        .pricing-row.total {
+            font-size: 16px;
+            font-weight: 700;
+            color: #dc2626;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 12px;
+            margin-top: 6px;
+        }
+        .delivery-box {
+            background-color: #fff7ed;
+            border-left: 4px solid #f97316;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .delivery-box h4 {
+            margin: 0 0 6px 0;
+            color: #c2410c;
+            font-size: 14px;
+        }
+        .btn-wrapper {
+            text-align: center;
+            margin: 30px 0 10px 0;
+        }
+        .btn-action {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff !important;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 3px 6px rgba(37, 99, 235, 0.3);
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            background-color: #fafafa;
+            border-top: 1px solid #eeeeee;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Cảm Ơn Bạn Đã Đặt Hàng! 🎉</h1>
+            <p>Đơn hàng của bạn đã được tiếp nhận và đang được xử lý</p>
+        </div>
+
+        <!-- Body -->
+        <div class="body-content">
+            <p>Xin chào <strong th:text="${recipientName}">Quý khách</strong>,</p>
+            <p>Chúng tôi đã nhận được thông tin đặt hàng từ bạn. Dưới đây là chi tiết đơn hàng:</p>
+
+            <!-- Khối thông tin chung đơn hàng -->
+            <div class="order-info-box">
+                <div class="order-info-row">
+                    <span class="label">Mã đơn hàng:</span>
+                    <span class="value" th:text="${orderCode}">HAZI261002203730K8M2</span>
+                </div>
+                <div class="order-info-row" th:if="${orderDate != null}">
+                    <span class="label">Thời gian đặt:</span>
+                    <span class="value" th:text="${orderDate}">08/10/2026 19:00</span>
+                </div>
+                <div class="order-info-row">
+                    <span class="label">Phương thức thanh toán:</span>
+                    <span class="value" th:text="${paymentMethodName}">Chuyển khoản VietQR SePay</span>
+                </div>
+                <div class="order-info-row">
+                    <span class="label">Trạng thái đơn:</span>
+                    <span class="value" style="color: #2563eb;" th:text="${orderStatusName}">Chờ thanh toán</span>
+                </div>
+            </div>
+
+            <!-- Khối thông tin địa chỉ giao hàng -->
+            <div class="delivery-box" th:if="${recipientName != null}">
+                <h4>📍 Địa Chỉ Nhận Hàng</h4>
+                <p style="margin: 3px 0;"><strong>Người nhận:</strong> <span th:text="${recipientName}">Nguyễn Văn A</span> (<span th:text="${recipientPhone}">0912345678</span>)</p>
+                <p style="margin: 3px 0;" th:if="${shippingAddress != null}"><strong>Địa chỉ:</strong> <span th:text="${shippingAddress}">123 Đường ABC, Phường X, Quận Y, Hà Nội</span></p>
+                <p style="margin: 3px 0;" th:if="${orderNote != null and !orderNote.isBlank()}"><strong>Ghi chú:</strong> <em th:text="${orderNote}">Giao giờ hành chính</em></p>
+            </div>
+
+            <!-- Khối hiển thị VietQR nếu là thanh toán chuyển khoản SEPAY -->
+            <div class="qr-section" th:if="${paymentQrUrl != null}">
+                <h3>📲 Quét Mã VietQR Để Thanh Toán Nhanh</h3>
+                <p style="margin: 5px 0; font-size: 13px; color: #166534;">
+                    Mở ứng dụng Ngân hàng của bạn và quét mã QR dưới đây:
+                </p>
+                
+                <img th:src="${paymentQrUrl}" alt="VietQR SePay" class="qr-img" />
+                
+                <div class="bank-details">
+                    <p><strong>Ngân hàng:</strong> <span th:text="${bankName}">MBBank</span></p>
+                    <p><strong>Số tài khoản:</strong> <span th:text="${accountNumber}">0931504117</span></p>
+                    <p><strong>Chủ tài khoản:</strong> <span th:text="${accountName}">NGUYEN DUC HAI</span></p>
+                    <p><strong>Số tiền:</strong> <span class="highlight-text" th:text="${#numbers.formatDecimal(totalAmount, 0, 'POINT', 0, 'POINT') + ' đ'}">350.000 đ</span></p>
+                    <p><strong>Nội dung CK:</strong> <span class="highlight-text" th:text="${transferContent}">HAZI261002203730K8M2</span></p>
+                </div>
+                
+                <p style="font-size: 12px; color: #b91c1c; margin-top: 10px;">
+                    ⚠️ <em>Vui lòng giữ nguyên nội dung chuyển khoản để hệ thống tự động xác nhận đơn ngay lập tức.</em>
+                </p>
+            </div>
+
+            <!-- Bảng danh sách sản phẩm -->
+            <h4 style="margin: 25px 0 10px 0; color: #1e293b;">🛍️ Danh Sách Sản Phẩm</h4>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th class="text-center" style="width: 60px;">SL</th>
+                        <th class="text-right" style="width: 100px;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td>
+                            <div class="item-name" th:text="${item.productName}">Áo Polo Nam</div>
+                            <div class="item-sku" th:if="${item.sku != null}" th:text="'SKU: ' + ${item.sku}">SKU: POLO-XL</div>
+                        </td>
+                        <td class="text-center" th:text="${item.quantity}">1</td>
+                        <td class="text-right" th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'POINT', 0, 'POINT') + ' đ'}">250.000 đ</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Bảng tổng hợp chi phí -->
+            <div class="pricing-summary">
+                <div class="pricing-row" th:if="${subtotal != null}">
+                    <span class="label">Tạm tính:</span>
+                    <span class="value" th:text="${#numbers.formatDecimal(subtotal, 0, 'POINT', 0, 'POINT') + ' đ'}">320.000 đ</span>
+                </div>
+                <div class="pricing-row" th:if="${shippingFee != null}">
+                    <span class="label">Phí vận chuyển:</span>
+                    <span class="value" th:text="${#numbers.formatDecimal(shippingFee, 0, 'POINT', 0, 'POINT') + ' đ'}">30.000 đ</span>
+                </div>
+                <div class="pricing-row" th:if="${discountAmount != null and discountAmount > 0}">
+                    <span class="label">Giảm giá:</span>
+                    <span class="value" style="color: #16a34a;" th:text="'- ' + ${#numbers.formatDecimal(discountAmount, 0, 'POINT', 0, 'POINT') + ' đ'}">- 0 đ</span>
+                </div>
+                <div class="pricing-row total">
+                    <span>Tổng cộng:</span>
+                    <span th:text="${#numbers.formatDecimal(totalAmount, 0, 'POINT', 0, 'POINT') + ' đ'}">350.000 đ</span>
+                </div>
+            </div>
+
+            <!-- Nút chi tiết đơn hàng -->
+            <div class="btn-wrapper" th:if="${orderDetailUrl != null}">
+                <a th:href="${orderDetailUrl}" class="btn-action" target="_blank">
+                    Xem Chi Tiết Đơn Hàng
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Mọi thắc mắc xin vui lòng liên hệ hotline hoặc phản hồi trực tiếp email này.</p>
+            <p style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">© HAZI Store E-Commerce. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

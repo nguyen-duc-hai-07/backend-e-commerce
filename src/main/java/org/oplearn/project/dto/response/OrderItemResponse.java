@@ -10,6 +10,7 @@ import org.oplearn.project.dto.request.OrderItemRequest;
 import org.oplearn.project.entity.OrderItem;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 @Data
@@ -33,6 +34,10 @@ public class OrderItemResponse {
   private String thumbnailUrl;
   private String sku;
   private Map<String, String> attributes;
+  private Boolean isDeleted;
+  private String createdBy;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public static OrderItemResponse from(OrderItem item) {
     if (item == null) {
@@ -49,6 +54,10 @@ public class OrderItemResponse {
         .quantity(item.getQuantity())
         .unitPrice(item.getUnitPrice())
         .totalPrice(total)
+        .isDeleted(item.getIsDeleted())
+        .createdBy(item.getCreatedBy())
+        .createdAt(item.getCreatedAt())
+        .updatedAt(item.getUpdatedAt())
         .build();
   }
 

@@ -34,7 +34,11 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
           pv.price,
           pv.quantity,
           p.name,
-          COALESCE(pv.imageUrl, p.thumbnailUrl)
+          COALESCE(pv.imageUrl, p.thumbnailUrl),
+          ci.isDeleted,
+          ci.createdBy,
+          ci.createdAt,
+          ci.updatedAt
     )
     FROM CartItem ci
     JOIN ProductVariant pv ON ci.variantId = pv.id

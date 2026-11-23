@@ -33,7 +33,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
           u.avatarUrl,
           r.rating,
           r.comment,
-          r.createdAt
+          r.isDeleted,
+          r.createdBy,
+          r.createdAt,
+          r.updatedAt
       )
       FROM Review r
       LEFT JOIN User u ON r.userId = u.id

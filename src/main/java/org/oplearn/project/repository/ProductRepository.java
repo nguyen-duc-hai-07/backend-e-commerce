@@ -46,7 +46,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                p.average_rating AS "averageRating",
                p.review_count AS "reviewCount",
                p.min_price AS "minPrice",
-               p.sold_count AS "soldCount"
+               p.sold_count AS "soldCount",
+               p.is_deleted AS "isDeleted",
+               p.created_by AS "createdBy",
+               p.created_at AS "createdAt",
+               p.updated_at AS "updatedAt"
         FROM products p
         WHERE p.is_deleted = false
           AND (CAST(:categoryId AS bigint) IS NULL OR p.category_id = CAST(:categoryId AS bigint))
@@ -90,6 +94,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Integer getReviewCount();
     BigDecimal getMinPrice();
     Integer getSoldCount();
+    Boolean getIsDeleted();
+    String getCreatedBy();
+    Instant getCreatedAt();
+    Instant getUpdatedAt();
   }
 
   @Query(value = "SELECT id FROM products TABLESAMPLE SYSTEM (10) WHERE is_deleted = false AND created_at >= :since  LIMIT :n", nativeQuery = true)

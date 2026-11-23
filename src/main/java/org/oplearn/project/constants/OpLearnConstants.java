@@ -97,6 +97,7 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_POST_PUBLIC = {
+      "/api/v1/webhooks/sepay"
     };
 
     public static final String[] HTTP_METHOD_PUT_PUBLIC = {
@@ -106,7 +107,8 @@ public class OpLearnConstants {
     };
 
     public static final String[] HTTP_METHOD_GET_ADMIN = {
-      "/api/v1/users"
+      "/api/v1/users",
+      "/api/v1/admin/statistics/**"
     };
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
@@ -116,7 +118,8 @@ public class OpLearnConstants {
       "/api/v1/product-variants/**",
       "/api/v1/product-images/**",
       "/api/v1/review-replies/**",
-      "/api/v1/payment-methods/**"
+      "/api/v1/payment-methods/**",
+      "/api/v1/payments"
     };
 
     public static final String[] HTTP_METHOD_PUT_ADMIN = {

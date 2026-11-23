@@ -73,7 +73,7 @@ security:
   jwt:
     # Base64-encoded HS256 key (>= 256 bit). Override via JWT_SECRET in production.
     secret: ${JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWtleS1jaGFuZ2UtbWUtaW4tcHJvZHVjdGlvbi0xMjM0NTY3OA==}
-    expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
@@ -105,3 +105,11 @@ ghtk:
       district: ${GHTK_SHOP_DISTRICT:Huyện Thanh Trì}
       ward: ${GHTK_SHOP_WARD:Xã Thanh Liệt}
       address: ${GHTK_SHOP_ADDRESS:nhà số 5, ngách 21/84 Yên Xá}
+sepay:
+  account-number: ${SEPAY_ACCOUNT_NUMBER:0931504117}
+  bank: ${SEPAY_BANK:MBBank}
+  account-name: ${SEPAY_ACCOUNT_NAME:NGUYEN DUC HAI}
+  api-key: ${SEPAY_API_KEY:PAFDL0WEJACS6I3PITVEZSQKJZTN2QYUMCUBR5MBBVDCZN5GEDFCSNNF7OTOHRX7}
+  webhook-token: ${SEPAY_WEBHOOK_TOKEN:hazii_sepay_secret_key_2026}
+  qr-template: ${SEPAY_QR_TEMPLATE:compact} # compact, qronly, etc.
+  order-prefix: ${SEPAY_ORDER_PREFIX:ORD}
