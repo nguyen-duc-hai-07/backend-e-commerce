@@ -23,6 +23,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   Optional<Order> findByOrderCodeAndIsDeletedFalse(String orderCode);
 
+  Optional<Order> findByTrackingCodeAndIsDeletedFalse(String trackingCode);
+
   @Modifying
   @Query("UPDATE Order o SET o.isDeleted = true WHERE o.id = :id AND o.isDeleted = false")
   void softDeleteById(Long id);
@@ -77,7 +79,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     )
     FROM Order o
     LEFT JOIN Address a ON o.addressId = a.id AND a.isDeleted = false
-    WHERE o.userId = :userId
+    WHERE (:userId IS NULL OR o.userId = :userId)
       AND (:status IS NULL OR o.status = :status)
       AND o.isDeleted = false
     ORDER BY o.id DESC
