@@ -7,6 +7,7 @@ import org.oplearn.project.dto.response.ConversationResponse;
 import org.oplearn.project.dto.response.CursorPageResponse;
 import org.oplearn.project.dto.response.MessageResponse;
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.ConversationStatus;
 import org.oplearn.project.enums.ConversationType;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.MessFacadeService;
@@ -50,6 +51,12 @@ public class MessFacadeServiceImpl implements MessFacadeService {
       if (!securityHelper.isAdmin() && !user.getId().equals(conversation.getUserId())) {
         log.warn("(create) user not authorized");
         throw new UserUnauthorizedException();
+      }
+
+      if (user.getId().equals(conversation.getUserId()) && conversation.getStatus() == ConversationStatus.CLOSED) {
+        log.info("(create) Reopening conversation {} to OPEN because customer {} sent a message",
+            conversation.getId(), user.getId());
+        conversationService.updateStatus(conversation.getId(), ConversationStatus.OPEN);
       }
     }
 

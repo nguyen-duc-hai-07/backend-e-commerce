@@ -14,11 +14,15 @@ public interface OrderFacadeService {
 
   OrderResponse detail(Long id);
 
+  OrderResponse findByOrderCode(String orderCode);
+
   PageResponse<OrderResponse> findByUserIdAndStatus(OrderFilterRequest request);
 
   void complete(Long id);
 
   void cancel(Long id);
+
+  void cancelByWebhook(Long id);
 
   void shipping(Long id);
 
