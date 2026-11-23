@@ -56,7 +56,7 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
       throw new UserUnauthorizedException();
     }
 
-    if (order.getStatus() != OrderStatus.CANCELLED) {
+    if (order.getStatus() != OrderStatus.CANCELLED && order.getStatus() != OrderStatus.REFUNDED) {
       log.warn("(facade) Order {} is in status {}, expected CANCELLED", order.getId(), order.getStatus());
       throw new InvalidOrderStatusException();
     }

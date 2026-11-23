@@ -112,7 +112,9 @@ public class OpLearnConstants {
       "/api/v1/vouchers/{id:[0-9]+}",
       "/api/v1/vouchers/code/**",
       "/api/v1/refunds/admin",
-      "/api/v1/refunds/admin/**"
+      "/api/v1/refunds/admin/**",
+      "/api/v1/return-requests/admin",
+      "/api/v1/return-requests/admin/**"
     };
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
@@ -136,7 +138,8 @@ public class OpLearnConstants {
       "/api/v1/review-replies/**",
       "/api/v1/payment-methods/**",
       "/api/v1/vouchers/**",
-      "/api/v1/refunds/**"
+      "/api/v1/refunds/**",
+      "/api/v1/return-requests/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
