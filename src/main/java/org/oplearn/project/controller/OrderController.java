@@ -10,7 +10,6 @@ import org.oplearn.project.dto.response.OrderPreviewResponse;
 import org.oplearn.project.dto.response.OrderResponse;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
-import org.oplearn.project.enums.OrderStatus;
 import org.oplearn.project.facade.OrderFacadeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +42,12 @@ public class OrderController {
   public ResponseGeneral<OrderResponse> detail(@PathVariable("id") Long id) {
     log.info("(detail) id: {}", id);
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.detail(id));
+  }
+
+  @GetMapping("/code/{orderCode}")
+  public ResponseGeneral<OrderResponse> findByOrderCode(@PathVariable("orderCode") String orderCode) {
+    log.info("(findByOrderCode) orderCode: {}", orderCode);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findByOrderCode(orderCode));
   }
 
   @PostMapping("/filter")

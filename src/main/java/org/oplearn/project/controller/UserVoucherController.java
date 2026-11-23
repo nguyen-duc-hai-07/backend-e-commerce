@@ -45,4 +45,10 @@ public class UserVoucherController {
     log.info("(findAvailableVouchersForOrder) target: {}", target);
     return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.findAvailableVouchersForOrder(target));
   }
+
+  @GetMapping("/my-voucher-ids")
+  public ResponseGeneral<List<Long>> getMyClaimedVoucherIds() {
+    log.info("(getMyClaimedVoucherIds)");
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, facade.getMyClaimedVoucherIds());
+  }
 }

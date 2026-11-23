@@ -8,6 +8,7 @@ import org.oplearn.project.dto.request.ConversationUpdateRequest;
 import org.oplearn.project.dto.response.ConversationResponse;
 import org.oplearn.project.dto.response.PageResponse;
 import org.oplearn.project.dto.response.ResponseGeneral;
+import org.oplearn.project.enums.ConversationStatus;
 import org.oplearn.project.facade.ConversationFacadeService;
 import org.oplearn.project.service.ConversationService;
 import org.springframework.http.HttpStatus;
@@ -60,20 +61,22 @@ public class ConversationController {
   @GetMapping("/search")
   public ResponseGeneral<PageResponse<ConversationResponse>> search(
       @RequestParam(name = PARAM_KEYWORD, required = false) String keyword,
+      @RequestParam(name = "status", required = false) ConversationStatus status,
       @RequestParam(name = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size,
       @RequestParam(name = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page
   ) {
-    log.info("(search) keyword: {}, size: {}, page: {}", keyword, size, page);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.search(keyword, size, page));
+    log.info("(search) keyword: {}, status: {}, size: {}, page: {}", keyword, status, size, page);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.search(keyword, status, size, page));
   }
 
   @GetMapping("/filter")
   public ResponseGeneral<PageResponse<ConversationResponse>> filter(
+      @RequestParam(name = "status", required = false) ConversationStatus status,
       @RequestParam(name = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size,
       @RequestParam(name = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page
   ) {
-    log.info("(filter) size: {}, page: {}", size, page);
-    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.filter(size, page));
+    log.info("(filter) status: {}, size: {}, page: {}", status, size, page);
+    return ResponseGeneral.ofSuccess(SUCCESS_MESSAGE, service.filter(status, size, page));
   }
 
   @GetMapping("/broadcasts")
