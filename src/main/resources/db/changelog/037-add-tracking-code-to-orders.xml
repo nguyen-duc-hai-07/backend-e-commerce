@@ -1,0 +1,14 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="037-add-tracking-code-to-orders" author="ecommerce">
+    <addColumn tableName="orders">
+      <column name="tracking_code" type="VARCHAR(100)"/>
+    </addColumn>
+  </changeSet>
+
+</databaseChangeLog>

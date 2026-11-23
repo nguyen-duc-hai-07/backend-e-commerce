@@ -84,19 +84,30 @@ public class ConversationServiceImpl implements ConversationService {
   }
 
   @Override
-  public PageResponse<ConversationResponse> search(String keyword, int size, int page) {
-    log.info("(service) search conversations: keyword: {}, size: {}, page: {}", keyword, size, page);
+  public PageResponse<ConversationResponse> search(String keyword, ConversationStatus status, int size, int page) {
+    log.info("(service) search conversations: keyword: {}, status: {}, size: {}, page: {}", keyword, status, size, page);
 
     Pageable pageable = PageRequest.of(page, size);
-    Page<Conversation> conversations = repository.search(keyword, pageable);
+    Page<Conversation> conversations = repository.search(keyword, status, pageable);
 
     return PageResponse.of(conversations.map(ConversationResponse::from));
   }
 
   @Override
-  public PageResponse<ConversationResponse> filter(int size, int page) {
-    log.info("(service) filter conversations: size: {}, page: {}", size, page);
-    return this.search(null, size, page);
+  public PageResponse<ConversationResponse> filter(ConversationStatus status, int size, int page) {
+    log.info("(service) filter conversations: status: {}, size: {}, page: {}", status, size, page);
+    return this.search(null, status, size, page);
+  }
+
+  @Override
+  @Transactional
+  public ConversationResponse updateStatus(Long id, ConversationStatus status) {
+    log.info("(service) updateStatus id: {}, status: {}", id, status);
+
+    Conversation conversation = this.findById(id);
+    conversation.setStatus(status);
+    Conversation updated = repository.save(conversation);
+    return ConversationResponse.from(updated);
   }
 
   @Override

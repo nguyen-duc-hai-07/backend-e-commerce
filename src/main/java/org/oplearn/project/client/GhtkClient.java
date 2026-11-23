@@ -2,7 +2,13 @@ package org.oplearn.project.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.oplearn.project.configuration.GhtkProperties;
+import org.oplearn.project.dto.ghtk.GhtkCancelResponse;
+import org.oplearn.project.dto.ghtk.GhtkOrderRequest;
+import org.oplearn.project.dto.ghtk.GhtkOrderResponse;
+import org.oplearn.project.dto.ghtk.GhtkTrackingResponse;
 import org.oplearn.project.dto.response.GhtkFeeResponse;
+import org.oplearn.project.exception.base.BadRequestException;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -107,5 +113,146 @@ public class GhtkClient {
         .message("Fallback default shipping fee")
         .fee(feeData)
         .build();
+  }
+
+  /**
+   * Đăng ký đơn giao hàng sang GHTK
+   * Endpoint: POST /services/shipment/order/?ver=1.5
+   */
+  public GhtkOrderResponse createOrder(GhtkOrderRequest request) {
+    String orderId = (request != null && request.getOrder() != null) ? request.getOrder().getId() : "UNKNOWN";
+    log.info("(GhtkClient) createOrder start for partner_order_id: {}", orderId);
+
+    try {
+      URI uri = UriComponentsBuilder.fromHttpUrl(properties.getBaseUrl())
+          .path("/services/shipment/order/")
+          .queryParam("ver", "1.5")
+          .build()
+          .encode()
+          .toUri();
+
+      log.info("(GhtkClient) createOrder URI: {}", uri);
+
+      GhtkOrderResponse response = restClient.post()
+          .uri(uri)
+          .header("Token", properties.getToken())
+          .header("X-Client-Source", properties.getClientSource())
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .body(GhtkOrderResponse.class);
+
+      log.info("(GhtkClient) createOrder response for {}: success={}, message={}, label={}",
+          orderId,
+          response != null ? response.getSuccess() : null,
+          response != null ? response.getMessage() : null,
+          (response != null && response.getOrder() != null) ? response.getOrder().getLabel() : null
+      );
+
+      return response;
+
+    } catch (Exception ex) {
+      log.error("(GhtkClient) Exception calling GHTK create order for order {}: {}", orderId, ex.getMessage(), ex);
+      return GhtkOrderResponse.builder()
+          .success(false)
+          .message("Connection error to GHTK: " + ex.getMessage())
+          .build();
+    }
+  }
+
+  public byte[] printLabel(String trackingCode, String pageSize) {
+    String size = (pageSize != null && !pageSize.isBlank()) ? pageSize : "A6";
+    log.info("(GhtkClient) printLabel for trackingCode: {}, size: {}", trackingCode, size);
+
+    try {
+      URI uri = UriComponentsBuilder.fromHttpUrl(properties.getBaseUrl())
+          .path("/services/label/" + trackingCode)
+          .queryParam("original", size)
+          .build()
+          .encode()
+          .toUri();
+
+      log.info("(GhtkClient) printLabel URI: {}", uri);
+
+      return restClient.get()
+          .uri(uri)
+          .header("Token", properties.getToken())
+          .header("X-Client-Source", properties.getClientSource())
+          .accept(MediaType.APPLICATION_PDF)
+          .retrieve()
+          .body(byte[].class);
+
+    } catch (Exception ex) {
+      log.error("(GhtkClient) Exception getting label for {}: {}", trackingCode, ex.getMessage(), ex);
+      throw new BadRequestException("Không thể lấy tem in từ GHTK: " + ex.getMessage());
+    }
+  }
+
+  public GhtkTrackingResponse getTracking(String trackingCode) {
+    log.info("(GhtkClient) getTracking for trackingCode: {}", trackingCode);
+
+    try {
+      URI uri = UriComponentsBuilder.fromHttpUrl(properties.getBaseUrl())
+          .path("/services/shipment/v2/" + trackingCode)
+          .build()
+          .encode()
+          .toUri();
+
+      log.info("(GhtkClient) getTracking URI: {}", uri);
+
+      return restClient.get()
+          .uri(uri)
+          .header("Token", properties.getToken())
+          .header("X-Client-Source", properties.getClientSource())
+          .retrieve()
+          .body(GhtkTrackingResponse.class);
+
+    } catch (Exception ex) {
+      log.error("(GhtkClient) Exception getting tracking for {}: {}", trackingCode, ex.getMessage(), ex);
+      throw new BadRequestException("Không thể tra cứu hành trình từ GHTK: " + ex.getMessage());
+    }
+  }
+
+  /**
+   * Hủy đơn hàng vận chuyển bên GHTK
+   * Endpoint: POST /services/shipment/cancel/{trackingCode}
+   *
+   * @param trackingCode Mã vận đơn GHTK (VD: S21.HN1.10098412)
+   * @return GhtkCancelResponse Kết quả hủy từ GHTK
+   */
+  public GhtkCancelResponse cancelOrder(String trackingCode) {
+    log.info("(GhtkClient) cancelOrder for trackingCode: {}", trackingCode);
+
+    try {
+      URI uri = UriComponentsBuilder.fromHttpUrl(properties.getBaseUrl())
+          .path("/services/shipment/cancel/" + trackingCode)
+          .build()
+          .encode()
+          .toUri();
+
+      log.info("(GhtkClient) cancelOrder URI: {}", uri);
+
+      GhtkCancelResponse response = restClient.post()
+          .uri(uri)
+          .header("Token", properties.getToken())
+          .header("X-Client-Source", properties.getClientSource())
+          .retrieve()
+          .body(GhtkCancelResponse.class);
+
+      log.info("(GhtkClient) cancelOrder result for {}: success={}, message={}",
+          trackingCode,
+          response != null ? response.getSuccess() : null,
+          response != null ? response.getMessage() : null
+      );
+
+      return response;
+
+    } catch (Exception ex) {
+      log.error("(GhtkClient) Exception canceling order {}: {}", trackingCode, ex.getMessage(), ex);
+      return GhtkCancelResponse.builder()
+          .success(false)
+          .message("Lỗi kết nối tới GHTK khi hủy đơn: " + ex.getMessage())
+          .build();
+    }
   }
 }

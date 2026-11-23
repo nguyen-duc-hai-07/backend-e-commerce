@@ -15,6 +15,8 @@ public interface OrderService {
 
   OrderResponse detail(Long id);
 
+  OrderResponse findByOrderCode(String orderCode);
+
   void updateStatus(Long id, OrderStatus status);
 
   PageResponse<OrderResponse> findByUserIdAndStatus(OrderFilterRequest request);

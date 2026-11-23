@@ -22,6 +22,8 @@ public class GhtkProperties {
   @Getter
   @Setter
   public static class ShopLocation {
+    private String name;
+    private String tel;
     private String province;
     private String district;
     private String ward;

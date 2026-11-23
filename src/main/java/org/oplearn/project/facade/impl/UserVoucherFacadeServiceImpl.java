@@ -74,4 +74,10 @@ public class UserVoucherFacadeServiceImpl implements UserVoucherFacadeService {
 
     return userVoucherService.findAvailableVouchersForOrder(currentUser.getId(), target, clock.instant());
   }
+
+  @Override
+  public List<Long> getMyClaimedVoucherIds() {
+    User currentUser = securityHelper.currentUser();
+    return userVoucherService.getClaimedVoucherIds(currentUser.getId());
+  }
 }

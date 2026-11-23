@@ -48,6 +48,9 @@ public class Order extends BaseEntity {
   @Column(name = "note", length = 500)
   private String note;
 
+  @Column(name = "tracking_code", length = 100)
+  private String trackingCode;
+
   @Column(name = "original_order_id")
   private Long originalOrderId;
 }

@@ -22,6 +22,9 @@ public interface UserVoucherRepository extends JpaRepository<UserVoucher, Long> 
 
   List<UserVoucher> findByOrderIdAndIsDeletedFalse(Long orderId);
 
+  @Query("SELECT uv.voucherId FROM UserVoucher uv WHERE uv.userId = :userId AND uv.isDeleted = false")
+  List<Long> findClaimedVoucherIdsByUserId(@Param("userId") Long userId);
+
   @Query("""
       SELECT new org.oplearn.project.dto.response.OrderVoucherResponse(
           uv.id,

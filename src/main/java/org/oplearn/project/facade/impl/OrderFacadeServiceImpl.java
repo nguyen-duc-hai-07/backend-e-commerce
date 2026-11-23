@@ -2,6 +2,7 @@ package org.oplearn.project.facade.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.oplearn.project.client.GhtkClient;
 import org.oplearn.project.dto.request.*;
 import org.oplearn.project.dto.response.*;
 import org.oplearn.project.entity.User;
@@ -42,6 +43,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final VoucherService voucherService;
   private final UserVoucherService userVoucherService;
   private final NotificationService notificationService;
+  private final GhtkClient ghtkClient;
 
   @Override
   @Transactional
@@ -238,14 +240,33 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   }
 
   @Override
+  public OrderResponse findByOrderCode(String orderCode) {
+    log.info("(facade) findByOrderCode: {}", orderCode);
+
+    User currentUser = securityHelper.currentUser();
+
+    OrderResponse orderResponse = orderService.findByOrderCode(orderCode);
+
+    if (!securityHelper.isAdmin() && !currentUser.getId().equals(orderResponse.getUserId())) {
+      log.warn("(findByOrderCode) user not authorized");
+      throw new UserUnauthorizedException();
+    }
+
+    AddressResponse addressResponse = addressService.detail(orderResponse.getAddressId());
+    orderResponse.setRecipientName(addressResponse.getRecipientName());
+    orderResponse.setRecipientPhone(addressResponse.getPhoneNumber());
+    enrichOrderItems(orderResponse.getItems());
+
+    return orderResponse;
+  }
+
+  @Override
   public PageResponse<OrderResponse> findByUserIdAndStatus(OrderFilterRequest request) {
     log.info("(facade) findByUserIdAndStatus request: {}", request);
 
     User currentUser = securityHelper.currentUser();
-    request.setUserId(currentUser.getId());
-    if(!securityHelper.isAdmin() && !currentUser.getId().equals(request.getUserId())) {
-      log.warn("(findByUserIdAndStatus) user not authorized");
-      throw new UserUnauthorizedException();
+    if (!securityHelper.isAdmin()) {
+      request.setUserId(currentUser.getId());
     }
 
     PageResponse<OrderResponse> responses = orderService.findByUserIdAndStatus(request);
@@ -318,6 +339,20 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
 
   @Override
   @Transactional
+  public void cancelByWebhook(Long id) {
+    log.info("(facade) cancelByWebhook order id: {}", id);
+    OrderResponse currentOrder = this.detail(id);
+
+    if (currentOrder.getStatus() == OrderStatus.CANCELLED) {
+      log.info("(cancelByWebhook) Order {} is already CANCELLED, skip", id);
+      return;
+    }
+
+    executeCancel(currentOrder);
+  }
+
+  @Override
+  @Transactional
   public void shipping(Long id) {
     log.info("(facade) shipping order id: {}", id);
 
@@ -360,6 +395,16 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
       && currentOrder.getStatus() != OrderStatus.PAID) {
       log.warn("(cancel) cannot cancel order with status: {}", currentOrder.getStatus());
       throw new InvalidOrderStatusException();
+    }
+
+    // Nếu đơn hàng đã có mã vận đơn bên GHTK -> Tự động bắn API hủy bưu tá GHTK
+    if (currentOrder.getTrackingCode() != null && !currentOrder.getTrackingCode().isBlank()) {
+      try {
+        ghtkClient.cancelOrder(currentOrder.getTrackingCode());
+        log.info("(executeCancel) Đã gửi yêu cầu hủy vận đơn {} sang GHTK", currentOrder.getTrackingCode());
+      } catch (Exception ex) {
+        log.error("(executeCancel) Lỗi khi gọi GHTK hủy đơn {}: {}", currentOrder.getTrackingCode(), ex.getMessage());
+      }
     }
 
     if (currentOrder.getItems() != null && !currentOrder.getItems().isEmpty()) {

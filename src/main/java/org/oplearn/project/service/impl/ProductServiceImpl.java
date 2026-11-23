@@ -162,23 +162,16 @@ public class ProductServiceImpl implements ProductService {
     log.info("(search) keyword: {}, categoryId: {}, page: {}, size: {}",
       request.getKeyword(), request.getCategoryId(), request.getPage(), request.getSize());
 
-    if(request.getKeyword() == null) {
-      request = new ProductFilterRequest();
-    }
-
     int page = (request.getPage() != null && request.getPage() >= 0) ? request.getPage() : 0;
     int size = (request.getSize() != null && request.getSize() > 0)
       ? Math.min(request.getSize(), OpLearnConstants.VariableConstant.MAX_PAGE_SIZE)
       : Integer.parseInt(OpLearnConstants.VariableConstant.SIZE_DEFAULT);
 
-    String keyword = request.getKeyword();
-    Long categoryId = request.getCategoryId();
-
     Pageable pageable = PageRequest.of(page, size);
 
-    String kw = StringUtils.hasText(keyword) ? keyword.trim() : null;
+    String kw = StringUtils.hasText(request.getKeyword()) ? request.getKeyword().trim() : null;
 
-    Page<ProductResponse> productPage = repository.search(kw, categoryId, pageable)
+    Page<ProductResponse> productPage = repository.search(kw, request.getCategoryId(), pageable)
       .map(ProductResponse::from);
 
     return PageResponse.of(

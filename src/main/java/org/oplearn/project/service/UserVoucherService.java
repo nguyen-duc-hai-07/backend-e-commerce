@@ -15,6 +15,8 @@ public interface UserVoucherService {
 
   boolean exists(Long userId, Long voucherId);
 
+  List<Long> getClaimedVoucherIds(Long userId);
+
   void refundVoucher(Long orderId);
 
   List<OrderVoucherResponse> findAvailableVouchersForOrder(Long userId , VoucherTarget target , Instant now);

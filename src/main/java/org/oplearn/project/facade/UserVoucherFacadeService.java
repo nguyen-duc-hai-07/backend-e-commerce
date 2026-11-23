@@ -11,4 +11,6 @@ public interface UserVoucherFacadeService {
   UserVoucherResponse claimVoucher(UserVoucherRequest request);
 
   List<OrderVoucherResponse> findAvailableVouchersForOrder(VoucherTarget target);
+
+  List<Long> getMyClaimedVoucherIds();
 }
