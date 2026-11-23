@@ -8,21 +8,24 @@ import org.oplearn.project.dto.response.*;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.enums.OrderStatus;
 import org.oplearn.project.enums.PaymentStatus;
+import org.oplearn.project.event.order.OrderCompletedEvent;
+import org.oplearn.project.event.order.OrderCreatedEvent;
 import org.oplearn.project.exception.InvalidOrderStatusException;
 import org.oplearn.project.exception.ProductOutOfStockException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.OrderFacadeService;
 import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.*;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,11 +42,11 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final PaymentMethodService paymentMethodService;
   private final PaymentQrService paymentQrService;
   private final PaymentService paymentService;
-  private final EmailService emailService;
   private final VoucherService voucherService;
   private final UserVoucherService userVoucherService;
   private final NotificationService notificationService;
   private final GhtkClient ghtkClient;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   @Transactional
@@ -84,7 +87,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
       .build();
     paymentService.create(paymentRequest);
 
-    sendOrderCreatedEmail(orderResponse, currentUser);
+    eventPublisher.publishEvent(new OrderCreatedEvent(orderResponse, currentUser.getEmail()));
 
     if (request.getVoucherProductId() != null) {
       userVoucherService.useVoucher(currentUser.getId(), request.getVoucherProductId(), orderResponse.getId());
@@ -320,6 +323,14 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
 
     order.setStatus(OrderStatus.COMPLETED);
     notificationService.createAndSendOrderStatus(order);
+
+    eventPublisher.publishEvent(new OrderCompletedEvent(
+        order.getId(),
+        order.getOrderCode(),
+        order.getUserId(),
+        order.getTotalAmount(),
+        order.getItems()
+    ));
   }
 
   @Override
@@ -458,6 +469,14 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
       orderService.updateStatus(order.getId(), OrderStatus.COMPLETED);
       order.setStatus(OrderStatus.COMPLETED);
       notificationService.createAndSendOrderStatus(order);
+
+      eventPublisher.publishEvent(new OrderCompletedEvent(
+          order.getId(),
+          order.getOrderCode(),
+          order.getUserId(),
+          order.getTotalAmount(),
+          order.getItems()
+      ));
     }
   }
 
@@ -496,70 +515,5 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
         OrderItemResponse.of(item, variant, product);
       }
     }
-  }
-
-  private void sendOrderCreatedEmail(OrderResponse orderResponse, User currentUser) {
-    if (currentUser.getEmail() == null || currentUser.getEmail().isBlank()) {
-      return;
-    }
-
-    try {
-      Map<String, Object> variables = buildOrderCreatedEmailVariables(orderResponse);
-
-      emailService.sendHtmlEmail(
-        currentUser.getEmail(),
-        "Xác nhận đơn hàng " + orderResponse.getOrderCode() + " đặt thành công",
-        "mail/order-created-email",
-        variables
-      );
-    } catch (Exception e) {
-      log.error("(sendOrderCreatedEmail) failed to send email for order: {}", orderResponse.getOrderCode(), e);
-    }
-  }
-
-  private Map<String, Object> buildOrderCreatedEmailVariables(OrderResponse orderResponse) {
-    Map<String, Object> variables = new HashMap<>();
-    variables.put("recipientName", orderResponse.getRecipientName());
-    variables.put("recipientPhone", orderResponse.getRecipientPhone());
-    variables.put("orderCode", orderResponse.getOrderCode());
-    variables.put("orderDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-    variables.put("orderNote", orderResponse.getNote());
-
-    PaymentMethodResponse paymentMethod = orderResponse.getPaymentMethod();
-    if (paymentMethod != null) {
-      variables.put("paymentMethodName", paymentMethod.getName());
-      variables.put("orderStatusName", "COD".equalsIgnoreCase(paymentMethod.getCode()) ? "Đã xác nhận" : "Chờ thanh toán");
-    }
-
-    AddressResponse addressResponse = orderResponse.getAddressId() != null
-        ? addressService.detail(orderResponse.getAddressId())
-        : null;
-    String shippingAddress = addressResponse != null ? addressResponse.getStreetAddress() : null;
-    variables.put("shippingAddress", shippingAddress);
-
-    PaymentQrResponse paymentQrResponse = orderResponse.getPaymentQr();
-    if (paymentQrResponse != null) {
-      variables.put("paymentQrUrl", paymentQrResponse.getQrCodeUrl());
-      variables.put("bankName", paymentQrResponse.getBankName());
-      variables.put("accountNumber", paymentQrResponse.getAccountNumber());
-      variables.put("accountName", paymentQrResponse.getAccountName());
-      variables.put("transferContent", paymentQrResponse.getTransferContent());
-    }
-
-    BigDecimal subtotal = orderResponse.getItems() != null
-        ? orderResponse.getItems().stream()
-            .map(OrderItemResponse::getTotalPrice)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal.ZERO, BigDecimal::add)
-        : BigDecimal.ZERO;
-
-    variables.put("items", orderResponse.getItems());
-    variables.put("subtotal", subtotal);
-    variables.put("shippingFee", orderResponse.getShippingFee());
-    variables.put("discountAmount", orderResponse.getDiscountAmount());
-    variables.put("totalAmount", orderResponse.getTotalAmount());
-    // variables.put("orderDetailUrl", "https://yourfrontend.com/orders/" + orderResponse.getId());
-
-    return variables;
   }
 }
