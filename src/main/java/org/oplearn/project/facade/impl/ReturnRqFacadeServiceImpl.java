@@ -17,12 +17,10 @@ import org.oplearn.project.exception.ReturnRequestAlreadyExistedException;
 import org.oplearn.project.exception.ReturnRequestLimitExceededException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ReturnRqFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.ReturnRqService;
-import org.oplearn.project.service.UserService;
 import org.oplearn.project.service.UserVoucherService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,27 +35,16 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
   private static final int RETURN_WINDOW_DAYS = 7;
 
   private final ReturnRqService returnRqService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final OrderService orderService;
   private final UserVoucherService userVoucherService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
 
   @Override
   @Transactional
   public ReturnRequestResponse create(ReturnRqRequest request) {
     log.info("(facade) create return request: {}", request);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     OrderResponse order = orderService.detail(request.getOrderId());
 
     this.validateCreate(currentUser, order);
@@ -72,7 +59,7 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
   public PageResponse<ReturnRequestResponse> filterByUserId(int size, int page) {
     log.info("(facade) list return request: userId: {}, size: {}, page: {}", size, page);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     return returnRqService.filterByUserId(currentUser.getId(), size, page);
   }
@@ -82,7 +69,7 @@ public class ReturnRqFacadeServiceImpl implements ReturnRqFacadeService {
   public void delete(Long id) {
     log.info("(facade) delete return request: id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     ReturnRequestResponse existing = returnRqService.detail(id);
     OrderResponse order = orderService.detail(existing.getOrderId());
 

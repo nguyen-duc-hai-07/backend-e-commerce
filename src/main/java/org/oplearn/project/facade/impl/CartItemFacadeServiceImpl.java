@@ -10,12 +10,10 @@ import org.oplearn.project.dto.response.ProductVariantResponse;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.CartItemFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.CartItemService;
 import org.oplearn.project.service.ProductService;
 import org.oplearn.project.service.ProductVariantService;
-import org.oplearn.project.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,26 +21,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CartItemFacadeServiceImpl implements CartItemFacadeService {
   private final CartItemService cartItemService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final ProductVariantService productVariantService;
   private final ProductService productService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
 
   @Override
   public CartItemResponse create(CartItemRequest request) {
     log.info("(facade) create cartItem request: {}", request);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
 
     ProductVariantResponse productVariant = productVariantService.detail(request.getVariantId());
@@ -58,10 +45,10 @@ public class CartItemFacadeServiceImpl implements CartItemFacadeService {
   public CursorPageResponse<CartItemResponse> findByUserId(Long userId, Long cursor, int size) {
     log.info("(facade) findByUserId: {}, cursor: {}, size: {}", userId, cursor, size);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     boolean isSelf = currentUser.getId().equals(userId);
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(findByUserId) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -75,10 +62,10 @@ public class CartItemFacadeServiceImpl implements CartItemFacadeService {
 
     CartItemResponse cart = cartItemService.detail(id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     boolean isSelf = currentUser.getId().equals(cart.getUserId());
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(update) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -97,10 +84,10 @@ public class CartItemFacadeServiceImpl implements CartItemFacadeService {
 
     CartItemResponse cart = cartItemService.detail(id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     boolean isSelf = currentUser.getId().equals(cart.getUserId());
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(detail) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -117,10 +104,10 @@ public class CartItemFacadeServiceImpl implements CartItemFacadeService {
 
     CartItemResponse cart = cartItemService.detail(id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     boolean isSelf = currentUser.getId().equals(cart.getUserId());
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(delete) user not authorized");
       throw new UserUnauthorizedException();
     }

@@ -11,9 +11,8 @@ import org.oplearn.project.exception.InvalidOrderStatusException;
 import org.oplearn.project.exception.ProductOutOfStockException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.OrderFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final OrderService orderService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final AddressService addressService;
   private final ShippingService shippingService;
   private final ProductVariantService productVariantService;
@@ -44,23 +43,11 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final UserVoucherService userVoucherService;
   private final ReturnRqService returnRqService;
 
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
-
-
   @Override
   @Transactional
   public OrderResponse create(OrderCreateRequest request) {
     log.info("(facade) create order request: {}", request);
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     OrderPreviewResponse preview = this.preView(request);
 
     PaymentMethodResponse paymentMethod = paymentMethodService.detail(request.getPaymentMethodId());
@@ -127,7 +114,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public OrderPreviewResponse preView(OrderRequest request) {
     log.info("(facade) preView order request: {}", request);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
 
     AddressResponse addressResponse;
@@ -231,11 +218,11 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public OrderResponse detail(Long id) {
     log.info("(facade) detail order id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     OrderResponse orderResponse = orderService.detail(id);
 
-    if (!isAdmin() && !currentUser.getId().equals(orderResponse.getUserId())) {
+    if (!securityHelper.isAdmin() && !currentUser.getId().equals(orderResponse.getUserId())) {
       log.warn("(detail) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -252,9 +239,9 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public PageResponse<OrderResponse> findByUserIdAndStatus(OrderFilterRequest request) {
     log.info("(facade) findByUserIdAndStatus request: {}", request);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
-    if(!isAdmin() && !currentUser.getId().equals(request.getUserId())) {
+    if(!securityHelper.isAdmin() && !currentUser.getId().equals(request.getUserId())) {
       log.warn("(findByUserIdAndStatus) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -283,10 +270,10 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public void complete(Long id) {
     log.info("(facade) complete order id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     OrderResponse order = this.detail(id);
 
-    if(!currentUser.getId().equals(order.getUserId()) && !isAdmin()) {
+    if(!currentUser.getId().equals(order.getUserId()) && !securityHelper.isAdmin()) {
       log.warn("(complete) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -314,10 +301,10 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public void cancel(Long id) {
     log.info("(facade) cancel order id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     OrderResponse currentOrder = this.detail(id);
 
-    if (!isAdmin() && !currentUser.getId().equals(currentOrder.getUserId())) {
+    if (!securityHelper.isAdmin() && !currentUser.getId().equals(currentOrder.getUserId())) {
       throw new UserUnauthorizedException();
     }
 
@@ -328,7 +315,7 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   public void handleReturnRequest(Long id) {
     log.info("(facade) handleReturnRequest order id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     OrderResponse currentOrder = this.detail(id);
 
     if(!currentUser.getId().equals(currentOrder.getUserId())) {

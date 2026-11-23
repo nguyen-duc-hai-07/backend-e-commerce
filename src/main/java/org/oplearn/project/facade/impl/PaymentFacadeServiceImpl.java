@@ -7,11 +7,9 @@ import org.oplearn.project.dto.response.PaymentResponse;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.PaymentFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.PaymentService;
-import org.oplearn.project.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,31 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentFacadeServiceImpl implements PaymentFacadeService {
   private final PaymentService paymentService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final OrderService orderService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
 
   @Override
   public PaymentResponse detail(Long id) {
     log.info("(facade) detail payment id: {}", id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     Long userId = paymentService.findUserIdByPaymentId(id);
 
     boolean isSelf = currentUser.getId().equals(userId);
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(detail) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -57,13 +44,13 @@ public class PaymentFacadeServiceImpl implements PaymentFacadeService {
   public List<PaymentResponse> findByOrderId(Long orderId) {
     log.info("(facade) findByOrderId: {}", orderId);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     OrderResponse order = orderService.detail(orderId);
 
     boolean isSelf = currentUser.getId().equals(order.getUserId());
 
-    if (!isAdmin() && !isSelf) {
+    if (!securityHelper.isAdmin() && !isSelf) {
       log.warn("(findByOrderId) user not authorized");
       throw new UserUnauthorizedException();
     }

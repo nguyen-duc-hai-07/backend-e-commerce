@@ -1,7 +1,7 @@
 package org.oplearn.project.repository;
 
-import org.oplearn.project.enums.AuthProvider;
 import org.oplearn.project.entity.User;
+import org.oplearn.project.enums.AuthProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -40,4 +41,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Modifying
   @Query("update User u set u.isDeleted = true where u.id = :id")
   void softDeleteById(@Param("id") Long id);
+
+  @Query("SELECT u.id FROM User u WHERE u.role = org.oplearn.project.enums.UserRole.ADMIN AND u.isDeleted = false")
+  List<Long> findAllAdminIds();
 }

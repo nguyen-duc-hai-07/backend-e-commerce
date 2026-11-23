@@ -15,11 +15,9 @@ import org.oplearn.project.exception.InvalidOrderStatusException;
 import org.oplearn.project.exception.RefundNotAllowedForCodException;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.RefundFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.OrderService;
 import org.oplearn.project.service.RefundService;
-import org.oplearn.project.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,26 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class RefundFacadeServiceImpl implements RefundFacadeService {
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final OrderService orderService;
   private final RefundService refundService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication != null && authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
 
   @Override
   @Transactional
   public RefundResponse create(RefundRequest request) {
     log.info("(facade) create refund request: {}", request);
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     OrderResponse order = orderService.detail(request.getOrderId());
 
@@ -76,11 +63,11 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
   @Override
   public RefundResponse detail(Long id) {
     log.info("(facade) detail refund id: {}", id);
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     RefundResponse refund = refundService.detail(id);
 
     boolean isOwner = currentUser.getId().equals(refund.getUserId());
-    if (!isAdmin() && !isOwner) {
+    if (!securityHelper.isAdmin() && !isOwner) {
       log.warn("(detail) user {} not authorized to view refund {}", currentUser.getId(), id);
       throw new UserUnauthorizedException();
     }
@@ -98,7 +85,7 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
   @Override
   public PageResponse<RefundResponse> filter(RefundFilterRequest request) {
     log.info("(facade) user filter refund request: {}", request);
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
     request.setUserId(currentUser.getId());
     return refundService.filter(request);
   }
@@ -106,7 +93,7 @@ public class RefundFacadeServiceImpl implements RefundFacadeService {
   @Override
   public PageResponse<RefundResponse> filterForAdmin(RefundStatus status, Integer page, Integer size) {
     log.info("(facade) filterForAdmin status: {}, page: {}, size: {}", status, page, size);
-    if (!isAdmin()) {
+    if (!securityHelper.isAdmin()) {
       log.warn("(filterForAdmin) user not authorized");
       throw new UserUnauthorizedException();
     }

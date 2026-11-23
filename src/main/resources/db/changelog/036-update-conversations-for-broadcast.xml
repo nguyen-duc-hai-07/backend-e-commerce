@@ -1,0 +1,25 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="036-update-conversations-for-broadcast" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <columnExists tableName="conversations" columnName="type"/>
+      </not>
+    </preConditions>
+    <addColumn tableName="conversations">
+      <column name="type" type="VARCHAR(50)" defaultValue="DIRECT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="title" type="VARCHAR(255)"/>
+    </addColumn>
+    <dropNotNullConstraint tableName="conversations"
+                           columnName="user_id"
+                           columnDataType="BIGINT"/>
+  </changeSet>
+
+</databaseChangeLog>

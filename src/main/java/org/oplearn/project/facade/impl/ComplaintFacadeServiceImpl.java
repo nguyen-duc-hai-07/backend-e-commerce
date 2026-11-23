@@ -10,11 +10,9 @@ import org.oplearn.project.entity.User;
 import org.oplearn.project.enums.ComplaintStatus;
 import org.oplearn.project.exception.UserUnauthorizedException;
 import org.oplearn.project.facade.ComplaintFacadeService;
+import org.oplearn.project.security.SecurityHelper;
 import org.oplearn.project.service.ComplaintService;
 import org.oplearn.project.service.OrderService;
-import org.oplearn.project.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,26 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
 
   private final ComplaintService complaintService;
-  private final UserService userService;
+  private final SecurityHelper securityHelper;
   private final OrderService orderService;
-
-  private User currentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userService.getUsernameOrThrow(authentication.getName());
-  }
-
-  private boolean isAdmin() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication.getAuthorities().stream()
-      .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-  }
 
   @Override
   @Transactional
   public ComplaintResponse create(ComplaintRequest request) {
     log.info("(facade) create complaint");
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     if (request.getOrderId() != null) {
       OrderResponse order = orderService.detail(request.getOrderId());
@@ -64,9 +51,9 @@ public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
 
     ComplaintResponse response = complaintService.detail(id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
-    if (!isAdmin() && !response.getUserId().equals(currentUser.getId())) {
+    if (!securityHelper.isAdmin() && !response.getUserId().equals(currentUser.getId())) {
       log.warn("(detail) user not authorized");
       throw new UserUnauthorizedException();
     }
@@ -78,7 +65,7 @@ public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
   public PageResponse<ComplaintResponse> filterByUserId(ComplaintStatus status, int size, int page) {
     log.info("(facade) filter complaints by userId");
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
     return complaintService.filterByUserId(currentUser.getId(), status, size, page);
   }
@@ -90,9 +77,9 @@ public class ComplaintFacadeServiceImpl implements ComplaintFacadeService {
 
     ComplaintResponse existing = complaintService.detail(id);
 
-    User currentUser = currentUser();
+    User currentUser = securityHelper.currentUser();
 
-    if (!isAdmin() && !existing.getUserId().equals(currentUser.getId())) {
+    if (!securityHelper.isAdmin() && !existing.getUserId().equals(currentUser.getId())) {
       log.warn("(delete) user not authorized");
       throw new UserUnauthorizedException();
     }

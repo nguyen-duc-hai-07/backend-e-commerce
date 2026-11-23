@@ -116,7 +116,10 @@ public class OpLearnConstants {
       "/api/v1/return-requests/admin",
       "/api/v1/return-requests/admin/**",
       "/api/v1/complaints/admin",
-      "/api/v1/complaints/admin/**"
+      "/api/v1/complaints/admin/**",
+      "/api/v1/conversations",
+      "/api/v1/conversations/search",
+      "/api/v1/conversations/broadcasts"
     };
 
     public static final String[] HTTP_METHOD_POST_ADMIN = {
@@ -142,7 +145,8 @@ public class OpLearnConstants {
       "/api/v1/vouchers/**",
       "/api/v1/refunds/**",
       "/api/v1/return-requests/**",
-      "/api/v1/complaints/**"
+      "/api/v1/complaints/**",
+      "/api/v1/conversations/**"
     };
 
     public static final String[] HTTP_METHOD_DELETE_ADMIN = {
@@ -153,7 +157,8 @@ public class OpLearnConstants {
       "/api/v1/product-variants/**",
       "/api/v1/product-images/**",
       "/api/v1/review-replies/**",
-      "/api/v1/payment-methods/**"
+      "/api/v1/payment-methods/**",
+      "/api/v1/conversations/**"
     };
 
     public static final String[] MATCHER_ADMIN_API = {"/api/v1/admin/**"};

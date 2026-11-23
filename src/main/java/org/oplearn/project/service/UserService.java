@@ -7,6 +7,8 @@ import org.oplearn.project.dto.response.UserResponse;
 import org.oplearn.project.entity.User;
 import org.oplearn.project.enums.UserStatus;
 
+import java.util.List;
+
 public interface UserService {
   UserResponse create(UserRequest request);
 
@@ -23,4 +25,6 @@ public interface UserService {
   User getUsernameOrThrow(String username);
 
   User getAvailableUserAndThrow(Long id);
+
+  List<Long> findAllAdminIds();
 }

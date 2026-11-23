@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -231,5 +232,11 @@ public class UserServiceImpl implements UserService {
   public User getAvailableUserAndThrow(Long id) {
     return repository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(UserNotFoundException::new);
+  }
+
+  @Override
+  public List<Long> findAllAdminIds() {
+    log.info("(service) find all admin ids");
+    return repository.findAllAdminIds();
   }
 }
