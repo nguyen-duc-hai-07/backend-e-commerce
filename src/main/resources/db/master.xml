@@ -35,5 +35,7 @@
   <include file="db/changelog/027-add-weight-to-product-variants.xml"/>
   <include file="db/changelog/028-add-image-url-to-product-variants.xml"/>
   <include file="db/changelog/030-add-index-orders-created-at.xml"/>
+  <include file="db/changelog/031-add-target-to-vouchers.xml"/>
+  <include file="db/changelog/032-drop-max-claim-per-user-from-vouchers.xml"/>
 
 </databaseChangeLog>

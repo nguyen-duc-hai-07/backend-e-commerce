@@ -30,16 +30,18 @@ public class OrderRequest {
   @Valid
   private List<OrderItemRequest> items;
 
-  //  private String voucherCode;
+  private Long voucherProductId;
+
+  private Long voucherShippingId;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long userId;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private BigDecimal shippingFee;
+  private BigDecimal discountAmount;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private BigDecimal discountAmount;
+  private BigDecimal shippingFee;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private BigDecimal totalAmount;

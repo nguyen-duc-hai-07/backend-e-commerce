@@ -27,6 +27,8 @@ public class OrderResponse {
   private String recipientName;
   private String recipientPhone;
   private BigDecimal shippingFee;
+  private BigDecimal productDiscountAmount;
+  private BigDecimal shippingDiscountAmount;
   private BigDecimal discountAmount;
   private BigDecimal totalAmount;
   private OrderStatus status;
@@ -150,6 +152,8 @@ public class OrderResponse {
     }
     response.setRecipientName(preview.getRecipientName());
     response.setRecipientPhone(preview.getRecipientPhone());
+    response.setProductDiscountAmount(preview.getProductDiscountAmount());
+    response.setShippingDiscountAmount(preview.getShippingDiscountAmount());
     return response;
   }
 

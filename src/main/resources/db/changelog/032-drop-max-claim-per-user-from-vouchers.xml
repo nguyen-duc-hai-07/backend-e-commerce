@@ -1,0 +1,15 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="032-drop-max-claim-per-user-from-vouchers" author="ecommerce">
+    <preConditions onFail="MARK_RAN">
+      <columnExists tableName="vouchers" columnName="max_claim_per_user"/>
+    </preConditions>
+    <dropColumn tableName="vouchers" columnName="max_claim_per_user"/>
+  </changeSet>
+
+</databaseChangeLog>

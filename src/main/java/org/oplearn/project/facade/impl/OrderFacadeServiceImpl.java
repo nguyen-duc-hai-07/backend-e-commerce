@@ -40,6 +40,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
   private final PaymentQrService paymentQrService;
   private final PaymentService paymentService;
   private final EmailService emailService;
+  private final VoucherService voucherService;
+  private final UserVoucherService userVoucherService;
 
   private User currentUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -94,12 +96,22 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
 
     sendOrderCreatedEmail(orderResponse, currentUser);
 
+    if (request.getVoucherProductId() != null) {
+      userVoucherService.useVoucher(currentUser.getId(), request.getVoucherProductId(), orderResponse.getId());
+    }
+
+    if (request.getVoucherShippingId() != null) {
+      userVoucherService.useVoucher(currentUser.getId(), request.getVoucherShippingId(), orderResponse.getId());
+    }
+
     return orderResponse;
   }
 
   private void setOrderResponse(OrderResponse orderResponse, OrderPreviewResponse preview) {
     orderResponse.setRecipientName(preview.getRecipientName());
     orderResponse.setRecipientPhone(preview.getRecipientPhone());
+    orderResponse.setProductDiscountAmount(preview.getProductDiscountAmount());
+    orderResponse.setShippingDiscountAmount(preview.getShippingDiscountAmount());
 
     if (orderResponse.getItems() != null && preview.getItems() != null) {
       for (int i = 0; i < orderResponse.getItems().size() && i < preview.getItems().size(); i++) {
@@ -177,12 +189,30 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
     BigDecimal shippingFee = shippingFeeResponse.getShippingFee();
     request.setShippingFee(shippingFee);
 
+    BigDecimal productDiscountAmount = BigDecimal.ZERO;
+    if (request.getVoucherProductId() != null) {
+      productDiscountAmount = voucherService.calculateDiscountProduct(
+        request.getVoucherProductId(),
+        subtotal
+      );
+    }
 
-    BigDecimal discountAmount = BigDecimal.ZERO;
-    // set tạm discountAmount = 0 trước , mai sau xử lí bảng voucher thì tính sau
+    BigDecimal shippingDiscountAmount = BigDecimal.ZERO;
+    if (request.getVoucherShippingId() != null) {
+      shippingDiscountAmount = voucherService.calculateDiscountShipping(
+        request.getVoucherShippingId(),
+        shippingFee,
+        subtotal
+      );
+    }
+
+    BigDecimal discountAmount = productDiscountAmount.add(shippingDiscountAmount);
     request.setDiscountAmount(discountAmount);
 
-    BigDecimal totalAmount = subtotal.subtract(discountAmount).add(shippingFee);
+    BigDecimal totalAmount = subtotal.add(shippingFee).subtract(discountAmount);
+    if (totalAmount.compareTo(BigDecimal.ZERO) < 0) {
+      totalAmount = BigDecimal.ZERO;
+    }
     request.setTotalAmount(totalAmount);
 
     return OrderPreviewResponse.of(
@@ -190,6 +220,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
       addressResponse,
       orderItems,
       subtotal,
+      productDiscountAmount,
+      shippingDiscountAmount,
       totalWeight
     );
   }
@@ -307,6 +339,8 @@ public class OrderFacadeServiceImpl implements OrderFacadeService {
         ));
       variantStock.forEach(productVariantService::increaseQuantity);
     }
+
+    userVoucherService.refundVoucher(currentOrder.getId());
 
     paymentService.updateStatusByOrderId(currentOrder.getId(), PaymentStatus.FAILED);
 
