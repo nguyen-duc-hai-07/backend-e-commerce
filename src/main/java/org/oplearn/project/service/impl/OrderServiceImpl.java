@@ -83,6 +83,21 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
+  public OrderResponse findByOrderCode(String orderCode) {
+    log.info("(findByOrderCode) orderCode: {}", orderCode);
+
+    Order order = repository.findByOrderCodeAndIsDeletedFalse(orderCode)
+      .orElseThrow(OrderNotFoundException::new);
+
+    List<OrderItemResponse> itemResponses = orderItemRepository.findAllByOrderIdAndIsDeletedFalse(order.getId()).stream()
+      .map(OrderItemResponse::from)
+      .toList();
+
+    return OrderResponse.from(order, itemResponses);
+  }
+
+  @Override
+  @Transactional
   public void updateStatus(Long id, OrderStatus status) {
     log.info("update status with id = {} , status = {}", id , status);
 

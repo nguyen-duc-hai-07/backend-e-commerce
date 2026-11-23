@@ -61,6 +61,11 @@ public class UserVoucherServiceImpl implements UserVoucherService {
   }
 
   @Override
+  public List<Long> getClaimedVoucherIds(Long userId) {
+    return repository.findClaimedVoucherIdsByUserId(userId);
+  }
+
+  @Override
   public void refundVoucher(Long orderId) {
     log.info("(service) refund voucher for orderId: {}", orderId);
 
