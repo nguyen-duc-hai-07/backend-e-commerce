@@ -49,6 +49,7 @@ spring:
 
 server:
   port: ${PORT:8088}
+  forward-headers-strategy: framework
   compression:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/css,application/javascript,image/svg+xml
